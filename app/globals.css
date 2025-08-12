@@ -121,6 +121,29 @@
   }
 }
 
+/* Light mode animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Enhanced fade-in with stagger support */
+.animate-fade-in:nth-child(1) { animation-delay: 0.1s; }
+.animate-fade-in:nth-child(2) { animation-delay: 0.2s; }
+.animate-fade-in:nth-child(3) { animation-delay: 0.3s; }
+.animate-fade-in:nth-child(4) { animation-delay: 0.4s; }
+.animate-fade-in:nth-child(5) { animation-delay: 0.5s; }
+
 /* 🚀 STUNNING TECH DESIGN SYSTEM */
 
 /* Ultra-modern gradient backgrounds */
