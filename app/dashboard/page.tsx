@@ -26,7 +26,7 @@ import {
   ArrowRight,
 } from "lucide-react"
 import Link from "next/link"
-import { AIChatWidget } from "@/components/ai-chat-widget"
+import AIChatWidget from "@/components/ai-chat-widget"
 import ProgressTracker from "@/components/progress-tracker"
 import ProtectedRoute from "@/components/protected-route"
 import { useAuth } from "@/contexts/auth-context"
@@ -34,6 +34,18 @@ import { useAuth } from "@/contexts/auth-context"
 export default function DashboardPage() {
   const { user, signOut } = useAuth()
   const [activeTab, setActiveTab] = useState("overview")
+
+  // Add error boundary for missing user data
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading user data...</p>
+        </div>
+      </div>
+    )
+  }
 
   // User data from auth context
   const userData = {

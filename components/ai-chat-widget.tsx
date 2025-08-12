@@ -36,6 +36,11 @@ export default function AIChatWidget() {
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+  // Add gradient background styles
+  const gradientBgStyle = {
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  }
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
@@ -98,9 +103,7 @@ export default function AIChatWidget() {
       timestamp: new Date(),
       suggestions: messageContent.toLowerCase().includes("resource")
         ? ["Show me TypeScript tutorials", "Find CSS practice projects", "Recommend coding challenges"]
-        : messageContent.toLowerCase().includes("interview")
-          ? ["Create interview timeline", "Practice behavioral questions", "Review my portfolio"]
-          : ["Tell me about my progress", "What should I learn next?", "Help with time management"],
+        : ["How can I improve faster?", "What should I focus on next?", "Help with interview prep"]
     }
 
     setMessages((prev) => [...prev, aiResponse])
@@ -108,6 +111,7 @@ export default function AIChatWidget() {
   }
 
   const handleSuggestionClick = (suggestion: string) => {
+    setInputValue(suggestion)
     handleSendMessage(suggestion)
   }
 
@@ -156,7 +160,7 @@ export default function AIChatWidget() {
                   >
                     <Avatar className="w-8 h-8">
                       {message.sender === "ai" ? (
-                        <div className="w-8 h-8 gradient-bg rounded-full flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center" style={gradientBgStyle}>
                           <Bot className="w-4 h-4 text-white" />
                         </div>
                       ) : (
@@ -200,7 +204,7 @@ export default function AIChatWidget() {
               <div className="flex justify-start">
                 <div className="flex items-center space-x-2">
                   <Avatar className="w-8 h-8">
-                    <div className="w-8 h-8 gradient-bg rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center" style={gradientBgStyle}>
                       <Bot className="w-4 h-4 text-white" />
                     </div>
                   </Avatar>
@@ -235,7 +239,7 @@ export default function AIChatWidget() {
               <Button
                 onClick={() => handleSendMessage()}
                 disabled={!inputValue.trim() || isTyping}
-                className="gradient-bg"
+                style={gradientBgStyle}
               >
                 <Send className="w-4 h-4" />
               </Button>

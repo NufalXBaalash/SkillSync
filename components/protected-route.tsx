@@ -18,6 +18,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     }
   }, [user, loading, router])
 
+  // Show loading only when actually loading, not when user is null
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50 flex items-center justify-center">
@@ -29,6 +30,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     )
   }
 
+  // If not loading and no user, don't render anything (will redirect)
   if (!user) {
     return null
   }

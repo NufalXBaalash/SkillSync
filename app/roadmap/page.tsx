@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { CheckCircle, Clock, Circle, ExternalLink, BookOpen, FileText, Code } from "lucide-react"
-import { AIChatWidget } from "@/components/ai-chat-widget"
+import AIChatWidget from "@/components/ai-chat-widget"
 
 interface Resource {
   title: string

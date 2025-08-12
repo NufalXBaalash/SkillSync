@@ -25,10 +25,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        if (error) {
+          console.error('Error getting session:', error)
+        }
+        setSession(session)
+        setUser(session?.user ?? null)
+        setLoading(false)
+      } catch (err) {
+        console.error('Failed to get initial session:', err)
+        setLoading(false)
+      }
     }
 
     getInitialSession()
@@ -36,9 +44,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        setSession(session)
-        setUser(session?.user ?? null)
-        setLoading(false)
+        try {
+          setSession(session)
+          setUser(session?.user ?? null)
+          setLoading(false)
+        } catch (err) {
+          console.error('Auth state change error:', err)
+          setLoading(false)
+        }
       }
     )
 
@@ -68,7 +81,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signOut = async () => {
-    await supabase.auth.signOut()
+    try {
+      await supabase.auth.signOut()
+      // Clear local state immediately
+      setUser(null)
+      setSession(null)
+      // Redirect to home page
+      window.location.href = '/'
+    } catch (error) {
+      console.error('Error signing out:', error)
+    }
   }
 
   const signInWithGoogle = async () => {
