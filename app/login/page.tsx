@@ -10,27 +10,65 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { ArrowLeft, Mail, Lock, Github, Linkedin, Target } from "lucide-react"
 import Link from "next/link"
+import { useAuth } from "@/contexts/auth-context"
+import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
+  const { signIn, signInWithGoogle, signInWithGithub } = useAuth()
+  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")
     setIsLoading(true)
 
-    // Mock login process
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      const { error } = await signIn(email, password)
 
-    // Redirect to dashboard (in real app, this would handle actual auth)
-    window.location.href = "/dashboard"
+      if (error) {
+        setError(error.message)
+      } else {
+        // Redirect to dashboard after successful login
+        router.push("/dashboard")
+      }
+    } catch (err) {
+      setError("An unexpected error occurred")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleSocialLogin = async (provider: string) => {
     setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    window.location.href = "/dashboard"
+    setError("")
+    
+    try {
+      let error
+      if (provider === "google") {
+        const result = await signInWithGoogle()
+        error = result.error
+      } else if (provider === "github") {
+        const result = await signInWithGithub()
+        error = result.error
+      } else {
+        setError("Provider not supported")
+        setIsLoading(false)
+        return
+      }
+      
+      if (error) {
+        setError(error.message)
+        setIsLoading(false)
+      }
+      // For OAuth, the redirect will be handled by the callback route
+    } catch (err) {
+      setError("An unexpected error occurred")
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -59,6 +97,13 @@ export default function LoginPage() {
             <CardDescription className="text-center">Enter your credentials to access your account</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            {/* Error Display */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
+                {error}
+              </div>
+            )}
+            
             {/* Social Login */}
             <div className="space-y-3">
               <Button

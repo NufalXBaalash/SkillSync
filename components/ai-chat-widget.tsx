@@ -15,7 +15,7 @@ interface Message {
   suggestions?: string[]
 }
 
-export function AIChatWidget() {
+export default function AIChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {

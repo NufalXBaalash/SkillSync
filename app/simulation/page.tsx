@@ -22,7 +22,7 @@ import {
   AlertCircle,
 } from "lucide-react"
 import Link from "next/link"
-import { AIChatWidget } from "@/components/ai-chat-widget"
+import AIChatWidget from "@/components/ai-chat-widget"
 
 interface SimulationTask {
   id: string

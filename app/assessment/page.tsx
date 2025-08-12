@@ -26,7 +26,7 @@ import {
   ArrowRight,
 } from "lucide-react"
 import Link from "next/link"
-import { AIChatWidget } from "@/components/ai-chat-widget"
+import AIChatWidget from "@/components/ai-chat-widget"
 
 interface SkillAssessment {
   detectedSkills: Array<{ name: string; level: number; category: string }>
