@@ -28,15 +28,20 @@ import {
 import Link from "next/link"
 import { AIChatWidget } from "@/components/ai-chat-widget"
 import ProgressTracker from "@/components/progress-tracker"
+import ProtectedRoute from "@/components/protected-route"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function DashboardPage() {
+  const { user, signOut } = useAuth()
   const [activeTab, setActiveTab] = useState("overview")
 
-  // Mock user data
+  // User data from auth context
   const userData = {
-    name: "Alex Johnson",
-    email: "alex.johnson@email.com",
-    joinDate: "March 2024",
+    name: user?.user_metadata?.first_name && user?.user_metadata?.last_name 
+      ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}`
+      : user?.email?.split('@')[0] || "User",
+    email: user?.email || "user@example.com",
+    joinDate: user?.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : "Recently",
     currentStreak: 12,
     totalPoints: 2847,
     level: "Intermediate",
@@ -117,9 +122,10 @@ export default function DashboardPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50">
+        {/* Header */}
+        <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
@@ -138,7 +144,7 @@ export default function DashboardPage() {
               <AvatarImage src={userData.avatar || "/placeholder.svg"} alt={userData.name} />
               <AvatarFallback>AJ</AvatarFallback>
             </Avatar>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={signOut}>
               <LogOut className="w-4 h-4" />
             </Button>
           </div>
@@ -416,6 +422,7 @@ export default function DashboardPage() {
                   <Button
                     variant="outline"
                     className="w-full justify-start text-red-600 hover:text-red-700 bg-transparent"
+                    onClick={signOut}
                   >
                     <LogOut className="w-4 h-4 mr-2" />
                     Sign Out
@@ -427,7 +434,8 @@ export default function DashboardPage() {
         </Tabs>
       </div>
 
-      <AIChatWidget />
-    </div>
+        <AIChatWidget />
+      </div>
+    </ProtectedRoute>
   )
 }

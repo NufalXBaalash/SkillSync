@@ -11,8 +11,12 @@ import { Separator } from "@/components/ui/separator"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ArrowLeft, Mail, Lock, User, Github, Linkedin, Target } from "lucide-react"
 import Link from "next/link"
+import { useAuth } from "@/contexts/auth-context"
+import { useRouter } from "next/navigation"
 
 export default function SignupPage() {
+  const { signUp, signInWithGoogle, signInWithGithub } = useAuth()
+  const router = useRouter()
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -22,31 +26,73 @@ export default function SignupPage() {
   })
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")
+    
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match")
+      setError("Passwords don't match")
       return
     }
     if (!agreedToTerms) {
-      alert("Please agree to the terms and conditions")
+      setError("Please agree to the terms and conditions")
       return
     }
 
     setIsLoading(true)
 
-    // Mock signup process
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      const { error } = await signUp(
+        formData.email,
+        formData.password,
+        {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+        }
+      )
 
-    // Redirect to dashboard (in real app, this would handle actual auth)
-    window.location.href = "/dashboard"
+      if (error) {
+        setError(error.message)
+      } else {
+        // Redirect to dashboard after successful signup
+        router.push("/dashboard")
+      }
+    } catch (err) {
+      setError("An unexpected error occurred")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleSocialSignup = async (provider: string) => {
     setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    window.location.href = "/dashboard"
+    setError("")
+    
+    try {
+      let error
+      if (provider === "google") {
+        const result = await signInWithGoogle()
+        error = result.error
+      } else if (provider === "github") {
+        const result = await signInWithGithub()
+        error = result.error
+      } else {
+        setError("Provider not supported")
+        setIsLoading(false)
+        return
+      }
+      
+      if (error) {
+        setError(error.message)
+        setIsLoading(false)
+      }
+      // For OAuth, the redirect will be handled by the callback route
+    } catch (err) {
+      setError("An unexpected error occurred")
+      setIsLoading(false)
+    }
   }
 
   const updateFormData = (field: string, value: string) => {
@@ -81,6 +127,13 @@ export default function SignupPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            {/* Error Display */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
+                {error}
+              </div>
+            )}
+            
             {/* Social Signup */}
             <div className="space-y-3">
               <Button
