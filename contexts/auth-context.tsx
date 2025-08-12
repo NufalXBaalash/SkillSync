@@ -22,10 +22,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
 
+  console.log("AuthProvider: initializing")
+
   useEffect(() => {
+    console.log("AuthProvider: setting up auth listener")
     // Get initial session
     const getInitialSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
+      console.log("AuthProvider: initial session:", session)
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
@@ -36,6 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log("AuthProvider: auth state change:", event, session)
         setSession(session)
         setUser(session?.user ?? null)
         setLoading(false)
@@ -112,7 +117,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext)
   if (context === undefined) {
+    console.error("useAuth must be used within an AuthProvider")
     throw new Error('useAuth must be used within an AuthProvider')
   }
+  console.log("useAuth hook called:", { user: context.user, loading: context.loading })
   return context
 }

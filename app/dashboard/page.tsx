@@ -2,7 +2,7 @@
 
 import { Label } from "@/components/ui/label"
 
-import { useState } from "react"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -26,16 +26,43 @@ import {
   ArrowRight,
 } from "lucide-react"
 import Link from "next/link"
-import { AIChatWidget } from "@/components/ai-chat-widget"
+import AIChatWidget from "@/components/ai-chat-widget"
 import ProgressTracker from "@/components/progress-tracker"
 import ProtectedRoute from "@/components/protected-route"
+
 import { useAuth } from "@/contexts/auth-context"
 
 export default function DashboardPage() {
-  const { user, signOut } = useAuth()
-  const [activeTab, setActiveTab] = useState("overview")
+  const { user, signOut, loading } = useAuth()
 
-  // User data from auth context
+  // Show loading state while auth is being determined
+  if (loading) {
+    console.log("DashboardPage: showing loading state")
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Ensure user exists before rendering
+  if (!user) {
+    console.log("DashboardPage: no user, showing login prompt")
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Please log in to access the dashboard</p>
+        </div>
+      </div>
+    )
+  }
+
+  console.log("DashboardPage: rendering main content")
+
+  // User data from auth context with proper null checks
   const userData = {
     name: user?.user_metadata?.first_name && user?.user_metadata?.last_name 
       ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}`
@@ -124,32 +151,45 @@ export default function DashboardPage() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50">
-        {/* Header */}
-        <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
-              <Target className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-serif font-bold gradient-text">SkillSync</span>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm">
-              <Bell className="w-4 h-4" />
-            </Button>
-            <Button variant="ghost" size="sm">
-              <Settings className="w-4 h-4" />
-            </Button>
-            <Avatar className="w-8 h-8">
-              <AvatarImage src={userData.avatar || "/placeholder.svg"} alt={userData.name} />
-              <AvatarFallback>AJ</AvatarFallback>
-            </Avatar>
-            <Button variant="ghost" size="sm" onClick={signOut}>
-              <LogOut className="w-4 h-4" />
-            </Button>
-          </div>
+      {/* Header */}
+      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+                 <Link href="/dashboard" className="flex items-center space-x-2">
+           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+             <Target className="w-5 h-5 text-white" />
+           </div>
+           <span className="text-xl font-serif font-bold text-blue-600">SkillSync</span>
+         </Link>
+                 <div className="flex items-center space-x-4">
+           <nav className="hidden md:flex items-center space-x-4">
+             <Link href="/assessment" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+               Assessment
+             </Link>
+             <Link href="/roadmap" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+               Roadmap
+             </Link>
+             <Link href="/simulation" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+               Simulation
+             </Link>
+           </nav>
+           <Button variant="ghost" size="sm">
+             <Bell className="w-4 h-4" />
+           </Button>
+           <Button variant="ghost" size="sm">
+             <Settings className="w-4 h-4" />
+           </Button>
+                     <Avatar className="w-8 h-8">
+             <AvatarImage src={userData.avatar} alt={userData.name} />
+             <AvatarFallback className="text-xs font-medium">
+               {userData.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+             </AvatarFallback>
+           </Avatar>
+          <Button variant="ghost" size="sm" onClick={signOut}>
+            <LogOut className="w-4 h-4" />
+          </Button>
         </div>
-      </header>
+      </div>
+    </header>
 
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Welcome Section */}
@@ -161,23 +201,23 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-center">
-                <div className="text-2xl font-bold gradient-text">{userData.currentStreak}</div>
+                <div className="text-2xl font-bold text-blue-600">{userData.currentStreak}</div>
                 <div className="text-sm text-gray-500">Day Streak</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold gradient-text">{userData.totalPoints}</div>
+                <div className="text-2xl font-bold text-blue-600">{userData.totalPoints}</div>
                 <div className="text-sm text-gray-500">Total Points</div>
               </div>
               <div className="text-center">
-                <Badge variant="secondary" className="text-sm">
-                  {userData.level}
-                </Badge>
+                                 <Badge variant="secondary">
+                   {userData.level}
+                 </Badge>
               </div>
             </div>
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="progress">Progress</TabsTrigger>
@@ -185,26 +225,26 @@ export default function DashboardPage() {
             <TabsTrigger value="profile">Profile</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="space-y-6">
+          <TabsContent value="overview">
             <div className="grid lg:grid-cols-3 gap-6">
               {/* Main Progress */}
               <div className="lg:col-span-2 space-y-6">
                 {/* Current Progress Card */}
-                <Card className="shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
+                <div className="bg-white rounded-xl border shadow-lg p-6">
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold flex items-center space-x-2">
                       <TrendingUp className="w-5 h-5 text-blue-600" />
                       <span>Current Progress</span>
-                    </CardTitle>
-                    <CardDescription>Your {progressData.currentPath} roadmap</CardDescription>
-                  </CardHeader>
-                  <CardContent>
+                    </h3>
+                    <p className="text-gray-600">Your {progressData.currentPath} roadmap</p>
+                  </div>
+                  <div>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
                         <span className="font-medium">Overall Completion</span>
                         <span className="text-sm text-gray-600">{progressData.overallProgress}%</span>
                       </div>
-                      <Progress value={progressData.overallProgress} className="h-3" />
+                                             <Progress value={progressData.overallProgress} className="h-3" />
                       <div className="grid grid-cols-3 gap-4 pt-4">
                         <div className="text-center">
                           <div className="text-2xl font-bold text-green-600">{progressData.completedMilestones}</div>
@@ -219,71 +259,68 @@ export default function DashboardPage() {
                           <div className="text-sm text-gray-500">Simulations</div>
                         </div>
                       </div>
-                      <div className="pt-4">
-                        <Link href="/roadmap">
-                          <Button className="w-full gradient-bg">
-                            Continue Learning
-                            <ArrowRight className="w-4 h-4 ml-2" />
-                          </Button>
-                        </Link>
-                      </div>
+                                             <div className="pt-4">
+                         <Link href="/roadmap">
+                           <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                             Continue Learning
+                             <ArrowRight className="w-4 h-4 ml-2" />
+                           </Button>
+                         </Link>
+                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
 
                 {/* Recent Activity */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
+                <div className="bg-white rounded-xl border p-6">
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold flex items-center space-x-2">
                       <Clock className="w-5 h-5 text-green-600" />
                       <span>Recent Activity</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {recentActivity.map((activity, index) => (
-                        <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                          <div className="flex-shrink-0">{activity.icon}</div>
-                          <div className="flex-1">
-                            <p className="font-medium text-sm">{activity.title}</p>
-                            <p className="text-xs text-gray-500">{activity.date}</p>
-                          </div>
-                          {activity.score && (
-                            <Badge variant="secondary" className="text-xs">
-                              {activity.score}%
-                            </Badge>
-                          )}
+                    </h3>
+                  </div>
+                  <div className="space-y-4">
+                    {recentActivity.map((activity, index) => (
+                      <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <div className="flex-shrink-0">{activity.icon}</div>
+                        <div className="flex-1">
+                          <p className="font-medium text-sm">{activity.title}</p>
+                          <p className="text-xs text-gray-500">{activity.date}</p>
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                                                 {activity.score && (
+                           <Badge variant="secondary" className="text-xs">
+                             {activity.score}%
+                           </Badge>
+                         )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               {/* Sidebar */}
               <div className="space-y-6">
                 {/* Upcoming Tasks */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Upcoming Tasks</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
+                <div className="bg-white rounded-xl border p-6">
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold">Upcoming Tasks</h3>
+                  </div>
+                  <div className="space-y-3">
                     {upcomingTasks.map((task, index) => (
                       <div key={index} className="space-y-2">
                         <div className="flex items-start justify-between">
                           <h4 className="font-medium text-sm">{task.title}</h4>
-                          <Badge
-                            variant={
-                              task.priority === "high"
-                                ? "destructive"
-                                : task.priority === "medium"
-                                  ? "default"
-                                  : "secondary"
-                            }
-                            className="text-xs"
-                          >
-                            {task.priority}
-                          </Badge>
+                                                     <Badge
+                             variant={
+                               task.priority === "high"
+                                 ? "destructive"
+                                 : task.priority === "medium"
+                                   ? "default"
+                                   : "secondary"
+                             }
+                           >
+                             {task.priority}
+                           </Badge>
                         </div>
                         <div className="flex justify-between text-xs text-gray-500">
                           <span>{task.dueDate}</span>
@@ -292,42 +329,44 @@ export default function DashboardPage() {
                         {index < upcomingTasks.length - 1 && <div className="border-b border-gray-100"></div>}
                       </div>
                     ))}
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
 
                 {/* Quick Actions */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Quick Actions</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Link href="/assessment">
-                      <Button variant="outline" className="w-full justify-start bg-transparent">
-                        <Target className="w-4 h-4 mr-2" />
-                        Retake Assessment
-                      </Button>
-                    </Link>
-                    <Link href="/simulation">
-                      <Button variant="outline" className="w-full justify-start bg-transparent">
-                        <Play className="w-4 h-4 mr-2" />
-                        Try New Simulation
-                      </Button>
-                    </Link>
-                    <Button variant="outline" className="w-full justify-start bg-transparent">
-                      <Users className="w-4 h-4 mr-2" />
-                      Join Study Group
-                    </Button>
-                  </CardContent>
-                </Card>
+                <div className="bg-white rounded-xl border p-6">
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold">Quick Actions</h3>
+                  </div>
+                                     <div className="space-y-3">
+                     <Link href="/assessment">
+                       <Button variant="outline" className="w-full justify-start bg-transparent">
+                         <Target className="w-4 h-4 mr-2" />
+                         Retake Assessment
+                       </Button>
+                     </Link>
+                     <Link href="/simulation">
+                       <Button variant="outline" className="w-full justify-start bg-transparent">
+                         <Play className="w-4 h-4 mr-2" />
+                         Try New Simulation
+                       </Button>
+                     </Link>
+                     <Link href="/roadmap">
+                       <Button variant="outline" className="w-full justify-start bg-transparent">
+                         <Users className="w-4 h-4 mr-2" />
+                         View Roadmap
+                       </Button>
+                     </Link>
+                   </div>
+                </div>
               </div>
             </div>
           </TabsContent>
 
-          <TabsContent value="progress" className="space-y-6">
+          <TabsContent value="progress">
             <ProgressTracker data={progressData} variant="detailed" showWeeklyGoal={true} />
           </TabsContent>
 
-          <TabsContent value="achievements" className="space-y-6">
+                    <TabsContent value="achievements">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {achievements.map((achievement, index) => (
                 <Card
@@ -350,11 +389,11 @@ export default function DashboardPage() {
                       <div className="flex-1">
                         <h3 className="font-medium text-sm">{achievement.name}</h3>
                         <p className="text-xs text-gray-600">{achievement.description}</p>
-                        {achievement.earned && (
-                          <Badge variant="secondary" className="text-xs mt-1">
-                            Earned
-                          </Badge>
-                        )}
+                                                 {achievement.earned && (
+                           <Badge variant="secondary" className="mt-1">
+                             Earned
+                           </Badge>
+                         )}
                       </div>
                     </div>
                   </CardContent>
@@ -363,7 +402,7 @@ export default function DashboardPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="profile" className="space-y-6">
+          <TabsContent value="profile">
             <div className="grid lg:grid-cols-3 gap-6">
               <Card className="lg:col-span-2">
                 <CardHeader>
@@ -371,10 +410,12 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-4">
-                    <Avatar className="w-20 h-20">
-                      <AvatarImage src={userData.avatar || "/placeholder.svg"} alt={userData.name} />
-                      <AvatarFallback className="text-lg">AJ</AvatarFallback>
-                    </Avatar>
+                                         <Avatar className="w-20 h-20">
+                       <AvatarImage src={userData.avatar} alt={userData.name} />
+                       <AvatarFallback className="text-lg font-medium">
+                         {userData.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                       </AvatarFallback>
+                     </Avatar>
                     <div>
                       <h3 className="text-xl font-semibold">{userData.name}</h3>
                       <p className="text-gray-600">{userData.email}</p>
@@ -382,22 +423,22 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="grid md:grid-cols-2 gap-4 pt-4">
-                    <div>
-                      <Label className="text-sm font-medium">Current Goal</Label>
-                      <p className="text-sm text-gray-600">Become a Frontend Developer</p>
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium">Experience Level</Label>
-                      <p className="text-sm text-gray-600">2 years in web development</p>
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium">Preferred Learning Style</Label>
-                      <p className="text-sm text-gray-600">Hands-on projects</p>
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium">Time Commitment</Label>
-                      <p className="text-sm text-gray-600">10-15 hours per week</p>
-                    </div>
+                                         <div>
+                       <Label className="text-sm font-medium">Current Goal</Label>
+                       <p className="text-sm text-gray-600">Become a Frontend Developer</p>
+                     </div>
+                     <div>
+                       <Label className="text-sm font-medium">Experience Level</Label>
+                       <p className="text-sm text-gray-600">2 years in web development</p>
+                     </div>
+                     <div>
+                       <Label className="text-sm font-medium">Preferred Learning Style</Label>
+                       <p className="text-sm text-gray-600">Hands-on projects</p>
+                     </div>
+                     <div>
+                       <Label className="text-sm font-medium">Time Commitment</Label>
+                       <p className="text-sm text-gray-600">10-15 hours per week</p>
+                     </div>
                   </div>
                 </CardContent>
               </Card>

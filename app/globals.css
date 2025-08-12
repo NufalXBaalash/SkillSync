@@ -379,3 +379,19 @@
 .tech-text-shadow {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+/* Gradient background and text classes used throughout the app */
+.gradient-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
