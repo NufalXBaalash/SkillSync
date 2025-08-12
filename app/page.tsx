@@ -1,39 +1,39 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, Target, Map, Zap, Star, TrendingUp, Code, BarChart3 } from "lucide-react"
+import { ArrowRight, Target, Map, Zap, Star, TrendingUp, Code, BarChart3, Users, Award, Clock, CheckCircle, Play, Download, MessageCircle, Database, Cpu, Shield, Zap as ZapIcon, Sparkles, Rocket, Brain, Terminal } from "lucide-react"
 import Link from "next/link"
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50">
+    <div className="min-h-screen tech-gradient-dark relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-3xl tech-float"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-pink-500/20 to-yellow-500/20 rounded-full blur-3xl tech-float-delayed"></div>
+        <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-full blur-3xl tech-float"></div>
+        <div className="absolute top-1/2 left-1/2 w-40 h-40 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl tech-float-delayed"></div>
+      </div>
+
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
-              <Target className="w-5 h-5 text-white" />
+      <header className="relative z-50 border-b border-white/10 bg-black/20 backdrop-blur-xl">
+        <div className="container-responsive py-6 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 tech-gradient-primary rounded-xl flex items-center justify-center tech-glow">
+              <Target className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-serif font-bold gradient-text">SkillSync</span>
+            <span className="text-2xl font-serif font-bold tech-text-gradient">SkillSync</span>
           </div>
-          <nav className="hidden md:flex items-center space-x-6">
-            <a href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">
-              Features
-            </a>
-            <a href="#how-it-works" className="text-gray-600 hover:text-gray-900 transition-colors">
-              How it Works
-            </a>
-            <a href="#testimonials" className="text-gray-600 hover:text-gray-900 transition-colors">
-              Success Stories
-            </a>
-            {/* Updated header navigation to include auth links */}
+          <nav className="hidden md:flex items-center space-x-8">
+            <a href="#features" className="text-white/90 hover:text-white transition-colors duration-300">Features</a>
+            <a href="#how-it-works" className="text-white/90 hover:text-white transition-colors duration-300">How it Works</a>
             <Link href="/login">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" className="tech-btn-secondary">
                 Sign In
               </Button>
             </Link>
             <Link href="/signup">
-              <Button size="sm" className="gradient-bg">
+              <Button className="tech-btn-primary">
                 Get Started
               </Button>
             </Link>
@@ -42,382 +42,304 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto text-center max-w-4xl">
-          <Badge className="mb-6 bg-blue-100 text-blue-700 hover:bg-blue-100">AI-Powered Career Coaching</Badge>
-          <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6 leading-tight">
-            Your AI Career Coach – <span className="gradient-text">Built for You, Evolving with You</span>
+      <section className="section-padding px-4 relative z-10">
+        <div className="container-responsive text-center max-w-6xl">
+          <Badge className="mb-8 bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-300 border border-blue-500/30 px-6 py-3 text-lg tech-fade-in">
+            <Sparkles className="w-5 h-5 mr-2" />
+            AI-Powered Skill Assessment
+          </Badge>
+          
+          <h1 className="text-responsive font-serif font-bold mb-8 leading-tight tech-fade-in tech-stagger-1 text-white">
+            Master the Skills That <span className="tech-text-gradient tech-text-glow">Actually Matter</span>
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Bridge the gap between education and employment with AI-driven skill analysis, personalized career mapping,
-            and real-world job simulation experiences.
+          
+          <p className="text-responsive-sm text-white/90 mb-10 max-w-4xl mx-auto leading-relaxed tech-fade-in tech-stagger-2">
+            Get a personalized learning roadmap based on real job requirements. No fluff, just the skills you need to land your next role.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          
+          <div className="flex flex-col sm:flex-row gap-6 justify-center tech-fade-in tech-stagger-3">
             <Link href="/assessment">
-              <Button size="lg" className="gradient-bg hover:opacity-90 text-lg px-8 py-6">
-                Start Your Career Journey
-                <ArrowRight className="ml-2 w-5 h-5" />
+              <Button size="lg" className="tech-btn-primary text-xl px-10 py-7">
+                <Rocket className="mr-3 w-6 h-6" />
+                Start Free Assessment
+                <ArrowRight className="ml-3 w-6 h-6" />
               </Button>
             </Link>
             <Link href="/assessment">
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6 bg-transparent">
-                Try Skill Assessment
+              <Button size="lg" variant="outline" className="tech-btn-secondary text-xl px-10 py-7">
+                <Play className="mr-3 w-6 h-6" />
+                View Demo
               </Button>
             </Link>
           </div>
-        </div>
-      </section>
-
-      {/* 3-Step Process */}
-      <section id="how-it-works" className="py-20 px-4 bg-white">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-serif font-bold mb-4">How SkillSync Works</h2>
-            <p className="text-xl text-gray-600">Three simple steps to accelerate your career</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="card-hover border-0 shadow-lg">
-              <CardHeader className="text-center pb-4">
-                <div className="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Target className="w-8 h-8 text-white" />
-                </div>
-                <CardTitle className="text-2xl font-serif">1. Assess Skills</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center">
-                <CardDescription className="text-base leading-relaxed">
-                  Upload your CV, connect GitHub/LinkedIn, or manually input your skills. Our AI analyzes your current
-                  abilities and identifies growth opportunities.
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="card-hover border-0 shadow-lg">
-              <CardHeader className="text-center pb-4">
-                <div className="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Map className="w-8 h-8 text-white" />
-                </div>
-                <CardTitle className="text-2xl font-serif">2. Get Roadmap</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center">
-                <CardDescription className="text-base leading-relaxed">
-                  Receive a personalized career path with interactive timelines, milestone tracking, and curated
-                  learning resources from top platforms.
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="card-hover border-0 shadow-lg">
-              <CardHeader className="text-center pb-4">
-                <div className="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Zap className="w-8 h-8 text-white" />
-                </div>
-                <CardTitle className="text-2xl font-serif">3. Practice Real Tasks</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center">
-                <CardDescription className="text-base leading-relaxed">
-                  Complete job simulations with real-world scenarios. Get instant feedback and build confidence before
-                  applying to actual positions.
-                </CardDescription>
-              </CardContent>
-            </Card>
+          
+          {/* Trust indicators */}
+          <div className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-10 text-sm text-white/70 tech-fade-in tech-stagger-4">
+            <div className="flex items-center space-x-3">
+              <CheckCircle className="w-5 h-5 text-green-400" />
+              <span>Free Assessment</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <CheckCircle className="w-5 h-5 text-green-400" />
+              <span>5-Minute Setup</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <CheckCircle className="w-5 h-5 text-green-400" />
+              <span>Real Job Data</span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Career Roadmap Examples */}
-      <section className="py-20 px-4 bg-gradient-to-br from-blue-50 to-violet-50">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-serif font-bold mb-4">Example Career Paths</h2>
-            <p className="text-xl text-gray-600">See how SkillSync creates personalized roadmaps</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card className="card-hover border-0 shadow-lg">
-              <CardHeader>
-                <div className="flex items-center space-x-3 mb-2">
-                  <BarChart3 className="w-6 h-6 text-blue-600" />
-                  <CardTitle className="text-lg">Data Analyst</CardTitle>
-                </div>
-                <Badge variant="secondary" className="w-fit">
-                  8 months
-                </Badge>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span>Learn SQL & Python</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span>Master Data Visualization</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                    <span>Complete Portfolio Projects</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="card-hover border-0 shadow-lg">
-              <CardHeader>
-                <div className="flex items-center space-x-3 mb-2">
-                  <Code className="w-6 h-6 text-violet-600" />
-                  <CardTitle className="text-lg">Frontend Developer</CardTitle>
-                </div>
-                <Badge variant="secondary" className="w-fit">
-                  6 months
-                </Badge>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span>Master React & TypeScript</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span>Build Responsive UIs</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                    <span>Deploy Full-Stack Apps</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="card-hover border-0 shadow-lg">
-              <CardHeader>
-                <div className="flex items-center space-x-3 mb-2">
-                  <TrendingUp className="w-6 h-6 text-green-600" />
-                  <CardTitle className="text-lg">Product Manager</CardTitle>
-                </div>
-                <Badge variant="secondary" className="w-fit">
-                  10 months
-                </Badge>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span>Learn Product Strategy</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span>Master User Research</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                    <span>Lead Cross-functional Teams</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section id="testimonials" className="py-20 px-4 bg-white">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-serif font-bold mb-4">Success Stories</h2>
-            <p className="text-xl text-gray-600">See how SkillSync transformed careers</p>
+      {/* Core Features */}
+      <section id="features" className="section-padding px-4 relative z-10">
+        <div className="container-responsive max-w-7xl">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl font-serif font-bold mb-6 text-white tech-fade-in">
+              Built for <span className="tech-text-gradient">Developers</span>
+            </h2>
+            <p className="text-2xl text-white/80 tech-fade-in tech-stagger-1">
+              Focus on what matters - building and shipping code
+            </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="card-hover border-0 shadow-lg">
-              <CardHeader>
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-violet-400 rounded-full flex items-center justify-center text-white font-bold">
-                    S
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">Sarah Chen</CardTitle>
-                    <CardDescription>Psychology → UX Designer</CardDescription>
-                  </div>
+            {[
+              {
+                icon: <Cpu className="w-8 h-8 text-blue-400" />,
+                title: "AI Skill Analysis",
+                description: "Analyze your GitHub, LinkedIn, and resume to identify skill gaps",
+                gradient: "from-blue-500/20 to-cyan-500/20"
+              },
+              {
+                icon: <Map className="w-8 h-8 text-purple-400" />,
+                title: "Learning Roadmap",
+                description: "Get a step-by-step path to your target role with time estimates",
+                gradient: "from-purple-500/20 to-pink-500/20"
+              },
+              {
+                icon: <Code className="w-8 h-8 text-green-400" />,
+                title: "Project Portfolio",
+                description: "Build real projects that showcase your skills to employers",
+                gradient: "from-green-500/20 to-emerald-500/20"
+              },
+              {
+                icon: <Database className="w-8 h-8 text-orange-400" />,
+                title: "Job Market Data",
+                description: "See real salary data and job requirements for your target role",
+                gradient: "from-orange-500/20 to-red-500/20"
+              },
+              {
+                icon: <Shield className="w-8 h-8 text-indigo-400" />,
+                title: "Interview Prep",
+                description: "Practice with real interview questions and coding challenges",
+                gradient: "from-indigo-500/20 to-blue-500/20"
+              },
+              {
+                icon: <ZapIcon className="w-8 h-8 text-yellow-400" />,
+                title: "Fast Learning",
+                description: "Skip the basics you already know, focus on what you need",
+                gradient: "from-yellow-500/20 to-orange-500/20"
+              }
+            ].map((feature, index) => (
+              <div key={index} className={`tech-card p-8 text-center tech-grid-item tech-stagger-${(index % 4) + 1}`}>
+                <div className={`w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-2xl flex items-center justify-center mx-auto mb-6 backdrop-blur-xl`}>
+                  {feature.icon}
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-sm text-gray-600">
-                  "SkillSync helped me transition from psychology to UX design in just 7 months. The job simulations
-                  were incredibly realistic!"
-                </p>
-              </CardContent>
-            </Card>
+                <h3 className="text-2xl font-semibold mb-4 text-white">{feature.title}</h3>
+                <p className="text-white/80 leading-relaxed">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-            <Card className="card-hover border-0 shadow-lg">
-              <CardHeader>
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-blue-400 rounded-full flex items-center justify-center text-white font-bold">
-                    M
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">Marcus Johnson</CardTitle>
-                    <CardDescription>Student → Data Analyst</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-sm text-gray-600">
-                  "The personalized roadmap was a game-changer. I landed my first data analyst role before even
-                  graduating!"
-                </p>
-              </CardContent>
-            </Card>
+      {/* How it Works */}
+      <section id="how-it-works" className="section-padding px-4 relative z-10">
+        <div className="container-responsive max-w-6xl">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl font-serif font-bold mb-6 text-white tech-fade-in">
+              How It <span className="tech-text-gradient">Works</span>
+            </h2>
+            <p className="text-2xl text-white/80 tech-fade-in tech-stagger-1">
+              Three steps to accelerate your career
+            </p>
+          </div>
 
-            <Card className="card-hover border-0 shadow-lg">
-              <CardHeader>
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-violet-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold">
-                    A
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: <Target className="w-10 h-10 text-blue-400" />,
+                title: "1. Assess Skills",
+                description: "Connect your GitHub, LinkedIn, or upload your resume. Our AI analyzes your current skills and identifies what you need to learn.",
+                number: "01"
+              },
+              {
+                icon: <Map className="w-10 h-10 text-purple-400" />,
+                title: "2. Get Roadmap",
+                description: "Receive a personalized learning path with specific courses, projects, and milestones. Track your progress in real-time.",
+                number: "02"
+              },
+              {
+                icon: <Zap className="w-10 h-10 text-green-400" />,
+                title: "3. Build & Apply",
+                description: "Complete projects, practice interviews, and build a portfolio. Apply with confidence knowing you have the right skills.",
+                number: "03"
+              }
+            ].map((step, index) => (
+              <div key={index} className="tech-card p-8 text-center tech-scale-in tech-stagger-${index + 1}">
+                <div className="relative mb-6">
+                  <div className="w-20 h-20 tech-gradient-primary rounded-full flex items-center justify-center mx-auto">
+                    {step.icon}
                   </div>
-                  <div>
-                    <CardTitle className="text-lg">Aisha Patel</CardTitle>
-                    <CardDescription>Marketing → Product Manager</CardDescription>
+                  <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                    {step.number}
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-sm text-gray-600">
-                  "The AI coach understood my background perfectly and created a path that built on my existing
-                  marketing skills."
-                </p>
-              </CardContent>
-            </Card>
+                <CardTitle className="text-2xl font-serif mb-4 text-white">{step.title}</CardTitle>
+                <CardDescription className="text-base leading-relaxed text-white/80">
+                  {step.description}
+                </CardDescription>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Popular Career Paths */}
+      <section className="section-padding px-4 relative z-10">
+        <div className="container-responsive max-w-7xl">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl font-serif font-bold mb-6 text-white tech-fade-in">
+              Popular <span className="tech-text-gradient">Career Paths</span>
+            </h2>
+            <p className="text-2xl text-white/80 tech-fade-in tech-stagger-1">
+              Choose from proven learning paths
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                icon: <Code className="w-7 h-7 text-blue-400" />,
+                title: "Full-Stack Developer",
+                duration: "6-8 months",
+                skills: ["React/Next.js Frontend", "Node.js Backend", "Database Design", "DevOps Basics"],
+                gradient: "from-blue-500/20 to-cyan-500/20"
+              },
+              {
+                icon: <BarChart3 className="w-7 h-7 text-purple-400" />,
+                title: "Data Engineer",
+                duration: "8-10 months",
+                skills: ["Python & SQL", "Data Pipelines", "Cloud Platforms", "ML Fundamentals"],
+                gradient: "from-purple-500/20 to-pink-500/20"
+              },
+              {
+                icon: <TrendingUp className="w-7 h-7 text-green-400" />,
+                title: "DevOps Engineer",
+                duration: "6-9 months",
+                skills: ["Linux & Scripting", "Docker & Kubernetes", "CI/CD Pipelines", "Cloud Infrastructure"],
+                gradient: "from-green-500/20 to-emerald-500/20"
+              }
+            ].map((path, index) => (
+              <div key={index} className={`tech-card tech-grid-item tech-stagger-${index + 1}`}>
+                <CardHeader>
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className={`w-12 h-12 bg-gradient-to-r ${path.gradient} rounded-xl flex items-center justify-center`}>
+                      {path.icon}
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl text-white">{path.title}</CardTitle>
+                      <Badge variant="secondary" className="w-fit bg-white text-black border-2 border-white font-bold px-3 py-1 shadow-lg">
+                        {path.duration}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3 text-sm text-white/80">
+                    {path.skills.map((skill, skillIndex) => (
+                      <div key={skillIndex} className="flex items-center space-x-3">
+                        <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"></div>
+                        <span>{skill}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 gradient-bg">
-        <div className="container mx-auto text-center max-w-4xl">
-          <h2 className="text-4xl font-serif font-bold text-white mb-6">Ready to Transform Your Career?</h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of students and professionals who've accelerated their careers with SkillSync.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/assessment">
-              <Button size="lg" variant="secondary" className="text-lg px-8 py-6">
-                Start Free Assessment
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-lg px-8 py-6 border-white text-white hover:bg-white hover:text-blue-600 bg-transparent"
-            >
-              View Demo
-            </Button>
+      <section className="section-padding px-4 relative z-10">
+        <div className="container-responsive text-center max-w-5xl">
+          <div className="tech-card p-16 text-center tech-gradient-card">
+            <h2 className="text-5xl font-serif font-bold text-white mb-8 tech-fade-in">
+              Ready to <span className="tech-text-gradient">Level Up</span>?
+            </h2>
+            <p className="text-2xl text-white/90 mb-12 max-w-3xl mx-auto tech-fade-in tech-stagger-1">
+              Join developers who are building better careers with SkillSync.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center tech-fade-in tech-stagger-2">
+              <Link href="/assessment">
+                <Button size="lg" className="tech-btn-primary text-xl px-10 py-7">
+                  Start Free Assessment
+                  <ArrowRight className="ml-3 w-6 h-6" />
+                </Button>
+              </Link>
+              <Link href="/signup">
+                <Button size="lg" variant="outline" className="tech-btn-secondary text-xl px-10 py-7">
+                  Create Account
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid md:grid-cols-4 gap-8">
+      <footer className="bg-black/40 backdrop-blur-xl border-t border-white/10 py-16 px-4 relative z-10">
+        <div className="container-responsive max-w-6xl">
+          <div className="grid md:grid-cols-4 gap-10">
             <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
-                  <Target className="w-5 h-5 text-white" />
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-10 h-10 tech-gradient-primary rounded-xl flex items-center justify-center">
+                  <Target className="w-6 h-6 text-white" />
                 </div>
-                <span className="text-xl font-serif font-bold">SkillSync</span>
+                <span className="text-2xl font-serif font-bold tech-text-gradient">SkillSync</span>
               </div>
-              <p className="text-gray-400 text-sm">AI-powered career coaching that evolves with you.</p>
+              <p className="text-white/70 text-sm">AI-powered career development for developers.</p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Skill Assessment
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Career Roadmaps
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Job Simulations
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    AI Coach
-                  </a>
-                </li>
+              <h4 className="font-semibold mb-6 text-white">Product</h4>
+              <ul className="space-y-3 text-sm text-white/70">
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Skill Assessment</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Learning Roadmaps</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Project Portfolio</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Interview Prep</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    About
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Careers
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Blog
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Contact
-                  </a>
-                </li>
+              <h4 className="font-semibold mb-6 text-white">Company</h4>
+              <ul className="space-y-3 text-sm text-white/70">
+                <li><a href="#" className="hover:text-white transition-colors duration-300">About</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Blog</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Careers</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Contact</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Help Center
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Terms of Service
-                  </a>
-                </li>
+              <h4 className="font-semibold mb-6 text-white">Support</h4>
+              <ul className="space-y-3 text-sm text-white/70">
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Help Center</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Terms of Service</a></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+          <div className="border-t border-white/10 mt-12 pt-8 text-center text-sm text-white/50">
             <p>&copy; 2024 SkillSync. All rights reserved.</p>
           </div>
         </div>

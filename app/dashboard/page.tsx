@@ -26,7 +26,7 @@ import {
   ArrowRight,
 } from "lucide-react"
 import Link from "next/link"
-import AIChatWidget from "@/components/ai-chat-widget"
+import { AIChatWidget } from "@/components/ai-chat-widget"
 import ProgressTracker from "@/components/progress-tracker"
 
 export default function DashboardPage() {
