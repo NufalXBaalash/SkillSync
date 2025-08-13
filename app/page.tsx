@@ -73,7 +73,7 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-32 px-4 overflow-hidden">
+      <section className="relative py-16 px-4 overflow-hidden">
         {/* Enhanced background elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl animate-pulse"></div>
@@ -82,19 +82,19 @@ export default function LandingPage() {
         </div>
         
         <div className="container mx-auto max-w-6xl text-center relative z-10">
-          <Badge className="mb-8 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 border border-blue-200/50 px-6 py-3 text-sm shadow-lg shadow-blue-500/10 animate-fade-in hover:scale-105 transition-all duration-300">
+          <Badge className="mb-6 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 border border-blue-200/50 px-6 py-3 text-sm shadow-lg shadow-blue-500/10 animate-fade-in hover:scale-105 transition-all duration-300">
             <Sparkles className="w-4 h-4 mr-2" />
             AI-Powered Skill Assessment
           </Badge>
           
-          <h1 className="text-6xl md:text-7xl lg:text-8xl font-serif font-bold mb-8 leading-tight text-slate-900 animate-fade-in">
+          <h1 className="text-6xl md:text-7xl lg:text-8xl font-serif font-bold mb-6 leading-tight text-slate-900 animate-fade-in">
             Master the Skills That{" "}
             <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent animate-pulse">
               Actually Matter
             </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-slate-600 mb-12 max-w-4xl mx-auto leading-relaxed animate-fade-in">
+          <p className="text-xl md:text-2xl text-slate-600 mb-8 max-w-4xl mx-auto leading-relaxed animate-fade-in">
             Get a personalized learning roadmap based on real job requirements. No fluff, just the skills you need to land your next role.
           </p>
           
@@ -115,7 +115,7 @@ export default function LandingPage() {
           </div>
           
           {/* Trust indicators */}
-          <div className="mt-20 flex flex-col sm:flex-row items-center justify-center gap-10 text-sm text-slate-500 animate-fade-in">
+          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-10 text-sm text-slate-500 animate-fade-in">
             <div className="flex items-center space-x-3 hover:scale-105 transition-transform duration-300">
               <CheckCircle className="w-5 h-5 text-green-500" />
               <span>Free Assessment</span>

@@ -300,32 +300,79 @@ function detectTechnologies(repos: GitHubRepo[], fileAnalyses: FileAnalysis[]): 
     }
   })
   
-  // Analyze file contents for technologies
-  fileAnalyses.forEach(file => {
-    // Count by file extension/language
-    if (file.language && file.language !== 'Unknown') {
-      technologies[file.language] = (technologies[file.language] || 0) + 1
-    }
+  // Enhanced detection from repository metadata (topics, description, name)
+  repos.forEach(repo => {
+    const repoText = [
+      repo.name,
+      repo.description || '',
+      ...(repo.topics || [])
+    ].join(' ').toLowerCase()
     
-    // Detect frameworks, databases, and tools from filename patterns
-    Object.entries(TECHNOLOGY_PATTERNS.frameworks).forEach(([name, pattern]) => {
-      if (pattern.test(file.filename)) {
-        frameworks[name] = (frameworks[name] || 0) + 1
+    // Detect frameworks from repo metadata
+    Object.entries(TECHNOLOGY_PATTERNS.frameworks).forEach(([tech, pattern]) => {
+      if (pattern.test(repoText)) {
+        frameworks[tech] = (frameworks[tech] || 0) + 1
       }
     })
     
-    Object.entries(TECHNOLOGY_PATTERNS.databases).forEach(([name, pattern]) => {
-      if (pattern.test(file.filename)) {
-        databases[name] = (databases[name] || 0) + 1
+    // Detect databases from repo metadata
+    Object.entries(TECHNOLOGY_PATTERNS.databases).forEach(([tech, pattern]) => {
+      if (pattern.test(repoText)) {
+        databases[tech] = (databases[tech] || 0) + 1
       }
     })
     
-    Object.entries(TECHNOLOGY_PATTERNS.tools).forEach(([name, pattern]) => {
-      if (pattern.test(file.filename)) {
-        tools[name] = (tools[name] || 0) + 1
+    // Detect tools from repo metadata
+    Object.entries(TECHNOLOGY_PATTERNS.tools).forEach(([tech, pattern]) => {
+      if (pattern.test(repoText)) {
+        tools[tech] = (tools[tech] || 0) + 1
+      }
+    })
+    
+    // Detect cloud platforms from repo metadata
+    Object.entries(TECHNOLOGY_PATTERNS.cloud).forEach(([tech, pattern]) => {
+      if (pattern.test(repoText)) {
+        tools[tech] = (tools[tech] || 0) + 1
       }
     })
   })
+  
+  // Analyze file contents (from the limited API calls we made)
+  fileAnalyses.forEach(file => {
+    const filename = file.filename.toLowerCase()
+    const extension = file.extension.toLowerCase()
+    
+    // Detect frameworks from filenames and extensions
+    Object.entries(TECHNOLOGY_PATTERNS.frameworks).forEach(([tech, pattern]) => {
+      if (pattern.test(filename) || pattern.test(extension)) {
+        frameworks[tech] = (frameworks[tech] || 0) + 1
+      }
+    })
+    
+    // Detect databases from filenames and extensions
+    Object.entries(TECHNOLOGY_PATTERNS.databases).forEach(([tech, pattern]) => {
+      if (pattern.test(filename) || pattern.test(extension)) {
+        databases[tech] = (databases[tech] || 0) + 1
+      }
+    })
+    
+    // Detect tools from filenames and extensions
+    Object.entries(TECHNOLOGY_PATTERNS.tools).forEach(([tech, pattern]) => {
+      if (pattern.test(filename) || pattern.test(extension)) {
+        tools[tech] = (tools[tech] || 0) + 1
+      }
+    })
+    
+    // Detect cloud platforms from filenames and extensions
+    Object.entries(TECHNOLOGY_PATTERNS.cloud).forEach(([tech, pattern]) => {
+      if (pattern.test(filename) || pattern.test(extension)) {
+        tools[tech] = (tools[tech] || 0) + 1
+      }
+    })
+  })
+  
+  // Merge all technologies into one object for backward compatibility
+  Object.assign(technologies, { ...languages, ...frameworks, ...databases, ...tools })
   
   return { languages, technologies, frameworks, databases, tools }
 }
@@ -403,16 +450,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No repositories found for this username' }, { status: 404 })
     }
     
-    // Analyze top repositories (limit to 10 to avoid rate limiting)
-    const topRepos = repos.slice(0, 10)
+    // Analyze only top 3 repositories to minimize API calls (was 10)
+    const topRepos = repos.slice(0, 3)
     const fileAnalyses: FileAnalysis[] = []
     
-    console.log('🔍 Analyzing repository contents...')
+    console.log('🔍 Analyzing repository contents (limited to 3 repos to avoid rate limiting)...')
     for (const repo of topRepos) {
       try {
         const repoFiles = await analyzeRepoContent(username, repo.name)
         fileAnalyses.push(...repoFiles)
         console.log(`✅ Analyzed repo: ${repo.name} (${repoFiles.length} files)`)
+        
+        // Add small delay between API calls to be respectful
+        await new Promise(resolve => setTimeout(resolve, 100))
       } catch (error) {
         console.warn(`⚠️ Failed to analyze repo ${repo.name}:`, error)
         // Continue with other repos
@@ -454,28 +504,30 @@ export async function POST(request: NextRequest) {
         forks: repo.forks_count,
         language: repo.language || 'Unknown',
         url: repo.html_url
-      })).slice(0, 5), // Show top 5 repos
+      })),
       recommendations
     }
     
-    console.log('🎉 GitHub analysis completed successfully')
+    console.log('🎉 Analysis completed successfully!')
     return NextResponse.json(analysis)
     
-  } catch (error) {
-    console.error('❌ GitHub analysis error:', error)
+  } catch (error: any) {
+    console.error('❌ Analysis failed:', error)
     
-    if (error instanceof Error) {
-      if (error.message.includes('not found')) {
-        return NextResponse.json({ error: 'GitHub username not found' }, { status: 404 })
-      }
-      if (error.message.includes('rate limit')) {
-        return NextResponse.json({ error: 'GitHub API rate limit exceeded. Please try again later.' }, { status: 429 })
-      }
-      if (error.message.includes('API error')) {
-        return NextResponse.json({ error: `GitHub API error: ${error.message}` }, { status: 500 })
-      }
+    if (error.message.includes('rate limit')) {
+      return NextResponse.json({ 
+        error: 'GitHub API rate limit exceeded. Please try again in about an hour, or use a GitHub personal access token for higher limits.' 
+      }, { status: 429 })
     }
     
-    return NextResponse.json({ error: 'Failed to analyze GitHub profile. Please check the username and try again.' }, { status: 500 })
+    if (error.message.includes('not found')) {
+      return NextResponse.json({ 
+        error: 'GitHub username not found. Please check the username and try again.' 
+      }, { status: 404 })
+    }
+    
+    return NextResponse.json({ 
+      error: `Analysis failed: ${error.message}` 
+    }, { status: 500 })
   }
 }

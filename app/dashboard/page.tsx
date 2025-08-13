@@ -2,7 +2,7 @@
 
 import { Label } from "@/components/ui/label"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -37,20 +37,118 @@ import ProtectedRoute from "@/components/protected-route"
 import { useAuth } from "@/contexts/auth-context"
 
 export default function DashboardPage() {
-  const { user, signOut } = useAuth()
+  const { user, loading, signOut } = useAuth()
   const [activeTab, setActiveTab] = useState("overview")
+  const [timeoutError, setTimeoutError] = useState(false)
 
-  // Add error boundary for missing user data
-  if (!user) {
+  // Add timeout protection
+  useEffect(() => {
+    if (loading) {
+      const timeoutId = setTimeout(() => {
+        console.warn('⚠️ Dashboard loading timeout')
+        setTimeoutError(true)
+      }, 15000) // 15 seconds timeout
+
+      return () => clearTimeout(timeoutId)
+    }
+  }, [loading])
+
+  // Debug logging
+  console.log('🔍 Dashboard render:', { user: !!user, loading, timeoutError })
+
+  // Show loading state while auth is being checked
+  if (loading && !timeoutError) {
+    console.log('⏳ Dashboard loading...')
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading user data...</p>
+          <p className="text-sm text-gray-500 mt-2">Please wait while we verify your session</p>
+          
+          {/* Manual refresh option */}
+          <div className="mt-6">
+            <Button 
+              onClick={() => window.location.reload()} 
+              variant="outline" 
+              size="sm"
+              className="text-xs"
+            >
+              Still loading? Click here to refresh
+            </Button>
+          </div>
+          
+          {/* Debug info */}
+          <div className="mt-4 text-xs text-gray-400">
+            <p>Debug: Loading state active</p>
+            <p>Check browser console for more details</p>
+          </div>
         </div>
       </div>
     )
   }
+
+  // Show timeout error
+  if (timeoutError) {
+    console.log('⏰ Dashboard loading timeout, showing error...')
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 text-6xl mb-4">⏰</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Loading Timeout</h2>
+          <p className="text-gray-600 mb-6">It seems like there was an issue loading your dashboard.</p>
+          <div className="space-y-3">
+            <Button 
+              onClick={() => window.location.reload()} 
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Refresh Page
+            </Button>
+            <br />
+            <Button 
+              onClick={() => window.location.href = '/login'} 
+              variant="outline"
+            >
+              Go to Login
+            </Button>
+          </div>
+          
+          {/* Debug info */}
+          <div className="mt-4 text-xs text-gray-400">
+            <p>Debug: Loading timeout after 15 seconds</p>
+            <p>Check browser console for auth context details</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Redirect to login if no user after loading
+  if (!user) {
+    console.log('❌ No user found, redirecting to login...')
+    // Use window.location for immediate redirect to avoid hydration issues
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login'
+      return null
+    }
+    
+    // Fallback for SSR
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 text-6xl mb-4">🔒</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h2>
+          <p className="text-gray-600 mb-6">Redirecting to login page...</p>
+          <div className="text-xs text-gray-400">
+            <p>Debug: No user found, redirecting to login</p>
+            <p>If this persists, please refresh the page</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  console.log('✅ Dashboard loaded for user:', user.email)
 
   // User data from auth context
   const userData = {

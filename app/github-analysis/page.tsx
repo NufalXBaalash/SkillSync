@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -50,6 +50,21 @@ export default function GitHubAnalysisPage() {
   const [analysisProgress, setAnalysisProgress] = useState(0)
   const [analysis, setAnalysis] = useState<GitHubAnalysis | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [scrollProgress, setScrollProgress] = useState(0)
+  const resultsRef = useRef<HTMLDivElement>(null)
+
+  // Track scroll progress
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight
+      const scrollPercent = (scrollTop / docHeight) * 100
+      setScrollProgress(scrollPercent)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const handleAnalysis = async () => {
     if (!username.trim()) {
@@ -84,6 +99,30 @@ export default function GitHubAnalysisPage() {
         const data = await response.json()
         setAnalysis(data)
         console.log('GitHub analysis completed:', data)
+        
+        // Auto-scroll to results after successful analysis with enhanced effect
+        setTimeout(() => {
+          if (resultsRef.current) {
+            // Add a subtle highlight effect
+            resultsRef.current.style.transition = 'all 0.3s ease'
+            resultsRef.current.style.transform = 'scale(1.02)'
+            resultsRef.current.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+            
+            // Scroll to results
+            resultsRef.current.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'start' 
+            })
+            
+            // Reset the highlight effect
+            setTimeout(() => {
+              if (resultsRef.current) {
+                resultsRef.current.style.transform = 'scale(1)'
+                resultsRef.current.style.boxShadow = 'none'
+              }
+            }, 1000)
+          }
+        }, 500)
       } else {
         const errorData = await response.json()
         setError(`Analysis Error: ${errorData.error}`)
@@ -107,120 +146,217 @@ export default function GitHubAnalysisPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
-              <Github className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-serif font-bold gradient-text">SkillSync</span>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4">
+      <div className="max-w-6xl mx-auto">
+        {/* Scroll Progress Bar */}
+        <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
+          <div 
+            className="h-full bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300"
+            style={{ width: `${scrollProgress}%` }}
+          />
+        </div>
+
+        {/* Navigation */}
+        <div className="flex items-center justify-between mb-6">
           <Link href="/dashboard">
             <Button variant="outline" size="sm">
-              Back to Dashboard
+              ← Back to Dashboard
+            </Button>
+          </Link>
+          <Link href="/profile-analysis">
+            <Button variant="outline" size="sm">
+              Combined Analysis →
             </Button>
           </Link>
         </div>
-      </header>
 
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Page Header */}
+        {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-serif font-bold mb-4">GitHub Skills Analysis</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Analyze your GitHub profile to discover your technical skills, programming languages, and project expertise
+          <div className="flex items-center justify-center mb-4">
+            <Github className="w-12 h-12 text-gray-800 mr-3" />
+            <h1 className="text-4xl font-bold text-gray-900">GitHub Skills Analysis</h1>
+          </div>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Analyze your GitHub profile to discover your technical skills, frameworks, and tools
           </p>
         </div>
 
-        {/* Input Section */}
-        {!analysis && !isAnalyzing && (
-          <Card className="max-w-2xl mx-auto mb-8">
-            <CardHeader>
-              <CardTitle className="text-2xl text-center">Enter GitHub Username</CardTitle>
-              <CardDescription className="text-center">
-                We'll analyze your public repositories to extract your technical skills
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <Label htmlFor="github-username" className="flex items-center space-x-2">
-                  <Github className="w-5 h-5" />
-                  <span>GitHub Username</span>
-                </Label>
+        {/* Rate Limit Warning */}
+        <Card className="mb-6 border-2 border-gradient-to-r from-amber-200 to-orange-200 bg-gradient-to-r from-amber-50/80 to-orange-50/80 shadow-lg backdrop-blur-sm">
+          <CardContent className="pt-6">
+            <div className="flex items-start space-x-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full flex items-center justify-center shadow-lg">
+                <span className="text-white text-xl font-bold">⚡</span>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-amber-800 mb-3 text-lg flex items-center">
+                  <span className="w-2 h-2 bg-amber-400 rounded-full mr-2 animate-pulse"></span>
+                  GitHub API Rate Limits
+                </h3>
+                <div className="space-y-2">
+                  <p className="text-amber-700 text-sm leading-relaxed">
+                    <span className="font-semibold">Public API:</span> <span className="bg-amber-100 px-2 py-1 rounded text-amber-800 font-mono text-xs">60 requests/hour</span>
+                  </p>
+                  <p className="text-amber-700 text-sm leading-relaxed">
+                    <span className="font-semibold">Per Analysis:</span> <span className="bg-amber-100 px-2 py-1 rounded text-amber-800 font-mono text-xs">~4 API calls</span>
+                  </p>
+                  <p className="text-amber-700 text-sm leading-relaxed">
+                    <span className="font-semibold">Pro Tip:</span> Use a personal access token for <span className="bg-gradient-to-r from-green-100 to-emerald-100 px-2 py-1 rounded text-green-800 font-mono text-xs">5,000 requests/hour</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Input Form */}
+        <Card className="mb-8 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Code className="w-5 h-5" />
+              <span>Enter GitHub Username</span>
+            </CardTitle>
+            <CardDescription>
+              We'll analyze your repositories to identify technologies and calculate your skill score
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex space-x-4">
+              <div className="flex-1">
+                <Label htmlFor="username">GitHub Username</Label>
                 <Input
-                  id="github-username"
-                  placeholder="Enter your GitHub username"
+                  id="username"
+                  type="text"
+                  placeholder="e.g., octocat"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="mt-2"
                   onKeyPress={(e) => e.key === 'Enter' && handleAnalysis()}
+                  className="text-lg"
                 />
               </div>
+              <div className="flex items-end">
+                <Button 
+                  onClick={handleAnalysis} 
+                  disabled={isAnalyzing || !username.trim()}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-6"
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <TrendingUp className="w-5 h-5 mr-2" />
+                      Analyze Profile
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-              {error && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-red-600">{error}</p>
+        {/* Error Display */}
+        {error && (
+          <Card className="mb-6 border-red-200 bg-red-50">
+            <CardContent className="pt-6">
+              <div className="flex items-start space-x-3">
+                <div className="text-red-600 mt-1">❌</div>
+                <div>
+                  <h3 className="font-semibold text-red-800 mb-2">Analysis Error</h3>
+                  <p className="text-red-700">{error}</p>
+                  {error.includes('rate limit') && (
+                    <div className="mt-3 p-3 bg-red-100 rounded border border-red-200">
+                      <p className="text-red-800 text-sm font-medium mb-2">Rate Limit Solutions:</p>
+                      <ul className="text-red-700 text-sm space-y-1">
+                        <li>• Wait about 1 hour for the limit to reset</li>
+                        <li>• Use a GitHub personal access token for higher limits</li>
+                        <li>• Try analyzing a different GitHub username</li>
+                      </ul>
+                    </div>
+                  )}
                 </div>
-              )}
-
-              <Button 
-                onClick={handleAnalysis} 
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg py-6"
-                disabled={!username.trim()}
-              >
-                <TrendingUp className="w-5 h-5 mr-2" />
-                Analyze GitHub Profile
-              </Button>
+              </div>
             </CardContent>
           </Card>
         )}
 
         {/* Loading State */}
         {isAnalyzing && (
-          <Card className="max-w-2xl mx-auto mb-8">
+          <Card className="max-w-2xl mx-auto mb-8 border-2 border-blue-200 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 shadow-xl">
             <CardHeader>
-              <CardTitle className="text-center">Analyzing GitHub Profile...</CardTitle>
-              <CardDescription className="text-center">
+              <CardTitle className="text-center text-blue-800">Analyzing GitHub Profile...</CardTitle>
+              <CardDescription className="text-center text-blue-600">
                 This may take a few moments depending on profile complexity
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Progress</span>
-                  <span>{analysisProgress}%</span>
+            <CardContent className="space-y-6">
+              <div className="space-y-3">
+                <div className="flex justify-between text-sm font-medium">
+                  <span className="text-blue-700">Progress</span>
+                  <span className="text-blue-800">{analysisProgress}%</span>
                 </div>
-                <Progress value={analysisProgress} className="h-3" />
+                <Progress value={analysisProgress} className="h-3 bg-blue-100" />
               </div>
               
-              <div className="text-center text-sm text-gray-600">
-                <div className="flex items-center justify-center space-x-2">
-                  <Github className="w-4 h-4" />
-                  <span>Analyzing GitHub profile: {username}</span>
+              <div className="text-center">
+                <div className="flex items-center justify-center space-x-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                  <Github className="w-5 h-5 text-blue-600" />
+                  <span className="text-blue-800 font-medium">Analyzing: @{username}</span>
                 </div>
+              </div>
+
+              <div className="text-center text-sm text-blue-600">
+                <p>Fetching repositories and analyzing code...</p>
               </div>
             </CardContent>
           </Card>
         )}
 
+        {/* Floating Scroll Indicator */}
+        {analysis && (
+          <div className="fixed bottom-8 right-8 z-50">
+            <Button 
+              onClick={() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              className="rounded-full w-12 h-12 p-0 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 animate-pulse"
+              title="Scroll to Results"
+            >
+              <TrendingUp className="w-5 h-5 text-white" />
+            </Button>
+          </div>
+        )}
+
         {/* Results Section */}
         {analysis && (
-          <div className="space-y-6">
+          <div ref={resultsRef} className="space-y-6 scroll-mt-8 transition-all duration-500 hover:scale-[1.01]">
+            {/* Results Header with Animation */}
+            <div className="text-center mb-8 p-6 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 rounded-xl border border-blue-200 hover:shadow-lg transition-all duration-300">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                Analysis Results for <span className="text-blue-600">@{analysis.username}</span>
+              </h2>
+              <p className="text-gray-600">Here's what we discovered about your GitHub profile</p>
+              <div className="mt-4 flex items-center justify-center space-x-2">
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+              </div>
+            </div>
+
             {/* Overall Score Card */}
-            <Card className="text-center">
+            <Card className="text-center border-2 border-blue-200 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
               <CardHeader>
                 <CardTitle className="text-3xl">GitHub Skills Score</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-center space-x-6 mb-6">
                   <div className="text-center">
-                    <div className="text-6xl font-bold gradient-text">{analysis.skillScore}</div>
+                    <div className="text-6xl font-bold gradient-text animate-pulse">{analysis.skillScore}</div>
                     <div className="text-lg text-gray-600">Total Score</div>
                   </div>
                   <div className="text-center">
-                    <Badge className={`text-lg px-4 py-2 ${getScoreLevel(analysis.skillScore).color} ${getScoreLevel(analysis.skillScore).textColor}`}>
+                    <Badge className={`text-lg px-4 py-2 ${getScoreLevel(analysis.skillScore).color} ${getScoreLevel(analysis.skillScore).textColor} animate-bounce`}>
                       {getScoreLevel(analysis.skillScore).level}
                     </Badge>
                   </div>
@@ -230,7 +366,7 @@ export default function GitHubAnalysisPage() {
             </Card>
 
             {/* Profile Stats */}
-            <Card>
+            <Card className="hover:shadow-lg transition-all duration-300 hover:scale-[1.01]">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Github className="w-5 h-5 text-gray-800" />
@@ -239,15 +375,15 @@ export default function GitHubAnalysisPage() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
+                  <div className="hover:scale-110 transition-transform duration-300">
                     <div className="text-2xl font-bold text-blue-600">{analysis.totalRepos}</div>
                     <div className="text-sm text-gray-600">Repositories</div>
                   </div>
-                  <div>
+                  <div className="hover:scale-110 transition-transform duration-300">
                     <div className="text-2xl font-bold text-yellow-600">{analysis.totalStars}</div>
                     <div className="text-sm text-gray-600">Stars</div>
                   </div>
-                  <div>
+                  <div className="hover:scale-110 transition-transform duration-300">
                     <div className="text-2xl font-bold text-green-600">{analysis.totalForks}</div>
                     <div className="text-sm text-gray-600">Forks</div>
                   </div>
@@ -257,7 +393,7 @@ export default function GitHubAnalysisPage() {
 
             {/* Skills Breakdown */}
             <div className="grid lg:grid-cols-2 gap-6">
-              <Card>
+              <Card className="hover:shadow-lg transition-all duration-300 hover:scale-[1.01]">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Code className="w-5 h-5 text-blue-600" />
@@ -270,7 +406,7 @@ export default function GitHubAnalysisPage() {
                       .sort(([,a], [,b]) => b - a)
                       .slice(0, 8)
                       .map(([lang, count]) => (
-                        <div key={lang} className="flex justify-between items-center">
+                        <div key={lang} className="flex justify-between items-center hover:bg-blue-50 p-2 rounded transition-colors duration-200">
                           <span className="text-sm">{lang}</span>
                           <Badge variant="secondary">{count}</Badge>
                         </div>
@@ -279,7 +415,7 @@ export default function GitHubAnalysisPage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="hover:shadow-lg transition-all duration-300 hover:scale-[1.01]">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Globe className="w-5 h-5 text-green-600" />
@@ -292,7 +428,7 @@ export default function GitHubAnalysisPage() {
                       .sort(([,a], [,b]) => b - a)
                       .slice(0, 8)
                       .map(([framework, count]) => (
-                        <div key={framework} className="flex justify-between items-center">
+                        <div key={framework} className="flex justify-between items-center hover:bg-green-50 p-2 rounded transition-colors duration-200">
                           <span className="text-sm">{framework}</span>
                           <Badge variant="secondary">{count}</Badge>
                         </div>
@@ -350,7 +486,7 @@ export default function GitHubAnalysisPage() {
             </div>
 
             {/* Top Repositories */}
-            <Card>
+            <Card className="hover:shadow-lg transition-all duration-300 hover:scale-[1.01]">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Star className="w-5 h-5 text-yellow-600" />
@@ -360,7 +496,7 @@ export default function GitHubAnalysisPage() {
               <CardContent>
                 <div className="space-y-4">
                   {analysis.topRepos.map((repo, index) => (
-                    <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                    <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-md">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <h4 className="font-medium text-lg">{repo.name}</h4>
@@ -386,7 +522,7 @@ export default function GitHubAnalysisPage() {
                           rel="noopener noreferrer"
                           className="ml-4"
                         >
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" className="hover:bg-blue-50 hover:border-blue-300 transition-colors duration-200">
                             View
                           </Button>
                         </a>
@@ -398,7 +534,7 @@ export default function GitHubAnalysisPage() {
             </Card>
 
             {/* Recommendations */}
-            <Card>
+            <Card className="hover:shadow-lg transition-all duration-300 hover:scale-[1.01]">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <TrendingUp className="w-5 h-5 text-green-600" />
@@ -408,7 +544,7 @@ export default function GitHubAnalysisPage() {
               <CardContent>
                 <div className="grid md:grid-cols-2 gap-4">
                   {analysis.recommendations.map((rec, index) => (
-                    <div key={index} className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
+                    <div key={index} className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-all duration-300 hover:scale-[1.02] hover:shadow-md">
                       <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-gray-700">{rec}</p>
                     </div>
@@ -426,22 +562,35 @@ export default function GitHubAnalysisPage() {
                   setError(null)
                 }}
                 variant="outline"
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 hover:bg-blue-50 hover:border-blue-300"
               >
                 <TrendingUp className="w-4 h-4" />
                 <span>Analyze Another Profile</span>
               </Button>
               <Link href="/profile-analysis">
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg">
                   <ArrowRight className="w-4 h-4 mr-2" />
                   Combined Analysis
                 </Button>
               </Link>
               <Link href="/dashboard">
-                <Button variant="outline">
+                <Button variant="outline" className="hover:bg-gray-50">
                   Back to Dashboard
                 </Button>
               </Link>
+            </div>
+
+            {/* Back to Top Button */}
+            <div className="text-center pt-8">
+              <Button 
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                variant="outline"
+                size="sm"
+                className="rounded-full px-6 py-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300"
+              >
+                <ArrowRight className="w-4 h-4 mr-2 rotate-[-90deg]" />
+                Back to Top
+              </Button>
             </div>
           </div>
         )}
