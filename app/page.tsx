@@ -99,10 +99,10 @@ export default function LandingPage() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center animate-fade-in">
-            <Link href="/assessment">
+            <Link href="/github-analysis">
               <Button size="lg" className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-xl px-12 py-7 shadow-2xl shadow-blue-500/25 hover:shadow-2xl hover:shadow-blue-500/40 transition-all duration-500 hover:scale-105 hover:-translate-y-1">
                 <Rocket className="mr-3 w-6 h-6" />
-                Start Free Assessment
+                Analyze GitHub Profile
                 <ArrowRight className="ml-3 w-6 h-6" />
               </Button>
             </Link>
@@ -173,8 +173,8 @@ export default function LandingPage() {
               },
               {
                 icon: <Code className="w-8 h-8 text-green-600" />,
-                title: "Project Portfolio",
-                description: "Build real projects that showcase your skills to employers",
+                title: "GitHub Skills Analysis",
+                description: "Analyze any GitHub profile to discover skills and technologies used",
                 bgColor: "bg-gradient-to-br from-green-50 to-green-100/50",
                 gradient: "from-green-500 to-emerald-500"
               },
@@ -260,8 +260,8 @@ export default function LandingPage() {
             {[
               {
                 icon: <Target className="w-10 h-10 text-blue-600" />,
-                title: "1. Assess Skills",
-                description: "Connect your GitHub, LinkedIn, or upload your resume. Our AI analyzes your current skills and identifies what you need to learn.",
+                title: "1. Analyze GitHub",
+                description: "Enter any GitHub username to analyze their repositories, detect technologies, and identify skills automatically.",
                 number: "01",
                 gradient: "from-blue-500 to-indigo-500"
               },
@@ -622,10 +622,10 @@ export default function LandingPage() {
             Join thousands of developers who are building better careers with SkillSync.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link href="/assessment">
+            <Link href="/github-analysis">
               <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 text-xl px-12 py-7 shadow-2xl hover:shadow-2xl hover:shadow-white/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1 group">
                 <Rocket className="mr-3 w-6 h-6 group-hover:animate-bounce" />
-                Start Free Assessment
+                Analyze GitHub Profile
                 <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
               </Button>
             </Link>
@@ -682,7 +682,7 @@ export default function LandingPage() {
             <div className="group">
               <h4 className="font-semibold mb-6 text-white text-lg group-hover:text-blue-100 transition-colors duration-300">Product</h4>
               <ul className="space-y-3 text-sm text-slate-300">
-                <li><a href="#" className="hover:text-white transition-all duration-300 hover:scale-105 hover:translate-x-1 inline-block">Skill Assessment</a></li>
+                <li><a href="/github-analysis" className="hover:text-white transition-all duration-300 hover:scale-105 hover:translate-x-1 inline-block">GitHub Analysis</a></li>
                 <li><a href="#" className="hover:text-white transition-all duration-300 hover:scale-105 hover:translate-x-1 inline-block">Learning Roadmaps</a></li>
                 <li><a href="#" className="hover:text-white transition-all duration-300 hover:scale-105 hover:translate-x-1 inline-block">Project Portfolio</a></li>
                 <li><a href="#" className="hover:text-white transition-all duration-300 hover:scale-105 hover:translate-x-1 inline-block">Interview Prep</a></li>

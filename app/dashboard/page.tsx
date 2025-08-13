@@ -24,6 +24,11 @@ import {
   Bell,
   Star,
   ArrowRight,
+  Github,
+  Zap,
+  ClipboardCheck,
+  Map,
+  Monitor,
 } from "lucide-react"
 import Link from "next/link"
 import AIChatWidget from "@/components/ai-chat-widget"
@@ -198,9 +203,103 @@ export default function DashboardPage() {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
+            {/* Main Content */}
             <div className="grid lg:grid-cols-3 gap-6">
-              {/* Main Progress */}
+              {/* Left Column - Main Actions */}
               <div className="lg:col-span-2 space-y-6">
+                {/* Profile Analysis - Prominent Button */}
+                <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2 text-2xl">
+                      <TrendingUp className="w-6 h-6 text-blue-600" />
+                      <span>Professional Profile Analysis</span>
+                    </CardTitle>
+                    <CardDescription className="text-lg">
+                      Get comprehensive insights into your skills by analyzing GitHub and LinkedIn profiles
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <Link href="/profile-analysis">
+                        <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg py-6">
+                          <TrendingUp className="w-5 h-5 mr-2" />
+                          Combined Analysis
+                        </Button>
+                      </Link>
+                      <Link href="/github-analysis">
+                        <Button variant="outline" className="w-full text-lg py-6 border-2 border-gray-300 hover:border-blue-500">
+                          <Github className="w-5 h-5 mr-2" />
+                          GitHub Only
+                        </Button>
+                      </Link>
+                    </div>
+                    <p className="text-sm text-gray-600 text-center">
+                      Analyze both platforms together or focus on GitHub skills analysis
+                    </p>
+                  </CardContent>
+                </Card>
+
+                {/* Quick Actions */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Zap className="w-5 h-5 text-yellow-600" />
+                      <span>Quick Actions</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <Link href="/assessment">
+                      <Button variant="outline" className="w-full justify-start bg-transparent">
+                        <ClipboardCheck className="w-4 h-4 mr-2" />
+                        Skills Assessment
+                      </Button>
+                    </Link>
+                    <Link href="/roadmap">
+                      <Button variant="outline" className="w-full justify-start bg-transparent">
+                        <Map className="w-4 h-4 mr-2" />
+                        Learning Roadmap
+                      </Button>
+                    </Link>
+                    <Link href="/simulation">
+                      <Button variant="outline" className="w-full justify-start bg-transparent">
+                        <Monitor className="w-4 h-4 mr-2" />
+                        Interview Simulation
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+
+                {/* Recent Activity */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Clock className="w-5 h-5 text-green-600" />
+                      <span>Recent Activity</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {recentActivity.map((activity, index) => (
+                        <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                          <div className="flex-shrink-0">{activity.icon}</div>
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">{activity.title}</p>
+                            <p className="text-xs text-gray-500">{activity.date}</p>
+                          </div>
+                          {activity.score && (
+                            <Badge variant="secondary" className="text-xs">
+                              {activity.score}%
+                            </Badge>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Right Column - Progress & Stats */}
+              <div className="space-y-6">
                 {/* Current Progress Card */}
                 <Card className="shadow-lg">
                   <CardHeader>
@@ -243,37 +342,6 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
 
-                {/* Recent Activity */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <Clock className="w-5 h-5 text-green-600" />
-                      <span>Recent Activity</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {recentActivity.map((activity, index) => (
-                        <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                          <div className="flex-shrink-0">{activity.icon}</div>
-                          <div className="flex-1">
-                            <p className="font-medium text-sm">{activity.title}</p>
-                            <p className="text-xs text-gray-500">{activity.date}</p>
-                          </div>
-                          {activity.score && (
-                            <Badge variant="secondary" className="text-xs">
-                              {activity.score}%
-                            </Badge>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Sidebar */}
-              <div className="space-y-6">
                 {/* Upcoming Tasks */}
                 <Card>
                   <CardHeader>
@@ -313,6 +381,12 @@ export default function DashboardPage() {
                     <CardTitle className="text-lg">Quick Actions</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
+                    <Link href="/profile-analysis">
+                      <Button variant="outline" className="w-full justify-start bg-transparent">
+                        <TrendingUp className="w-4 h-4 mr-2" />
+                        Profile Analysis
+                      </Button>
+                    </Link>
                     <Link href="/assessment">
                       <Button variant="outline" className="w-full justify-start bg-transparent">
                         <Target className="w-4 h-4 mr-2" />
@@ -325,10 +399,6 @@ export default function DashboardPage() {
                         Try New Simulation
                       </Button>
                     </Link>
-                    <Button variant="outline" className="w-full justify-start bg-transparent">
-                      <Users className="w-4 h-4 mr-2" />
-                      Join Study Group
-                    </Button>
                   </CardContent>
                 </Card>
               </div>
