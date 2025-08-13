@@ -26,9 +26,11 @@ import {
   CheckCircle,
   Clock,
   MapPin,
-  Building
+  Building,
+  Home,
 } from "lucide-react"
 import Link from "next/link"
+import SharedNavigation from "@/components/shared-navigation"
 
 interface GitHubAnalysis {
   username: string
@@ -224,22 +226,7 @@ export default function ProfileAnalysisPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50" suppressHydrationWarning>
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-serif font-bold gradient-text">SkillSync</span>
-          </div>
-          <Link href="/dashboard">
-            <Button variant="outline" size="sm">
-              Back to Dashboard
-            </Button>
-          </Link>
-        </div>
-      </header>
+      <SharedNavigation />
 
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Page Header */}
@@ -252,7 +239,7 @@ export default function ProfileAnalysisPage() {
 
         {/* Input Section */}
         {!githubAnalysis && !linkedinAnalysis && !isAnalyzing && (
-          <Card className="max-w-4xl mx-auto mb-8">
+          <Card className="max-w-4xl mx-auto mb-8 hover:shadow-lg transition-all duration-300">
             <CardHeader>
               <CardTitle className="text-2xl text-center">Enter Your Profile Information</CardTitle>
               <CardDescription className="text-center">
@@ -271,7 +258,7 @@ export default function ProfileAnalysisPage() {
                     placeholder="Enter your GitHub username (optional)"
                     value={githubUsername}
                     onChange={(e) => setGithubUsername(e.target.value)}
-                    className="mt-2"
+                    className="mt-2 hover:border-blue-300 focus:border-blue-500 transition-colors duration-200"
                   />
                 </div>
                 
@@ -285,7 +272,7 @@ export default function ProfileAnalysisPage() {
                     placeholder="https://linkedin.com/in/your-profile (optional)"
                     value={linkedinUrl}
                     onChange={(e) => setLinkedinUrl(e.target.value)}
-                    className="mt-2"
+                    className="mt-2 hover:border-blue-300 focus:border-blue-500 transition-colors duration-200"
                   />
                   <p className="text-sm text-amber-600 mt-1">
                     ⚠️ LinkedIn analysis may use fallback data if profile is private or scraping fails
@@ -301,7 +288,7 @@ export default function ProfileAnalysisPage() {
 
               <Button 
                 onClick={handleAnalysis} 
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg py-6"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg py-6 shadow-lg hover:shadow-xl transition-all duration-300"
                 disabled={!githubUsername && !linkedinUrl}
               >
                 <TrendingUp className="w-5 h-5 mr-2" />
@@ -313,7 +300,7 @@ export default function ProfileAnalysisPage() {
 
         {/* Loading State */}
         {isAnalyzing && (
-          <Card className="max-w-2xl mx-auto mb-8">
+          <Card className="max-w-2xl mx-auto mb-8 border-2 border-blue-200 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 shadow-xl hover:shadow-2xl transition-all duration-300">
             <CardHeader>
               <CardTitle className="text-center">Analyzing Profiles...</CardTitle>
               <CardDescription className="text-center">
@@ -389,7 +376,7 @@ export default function ProfileAnalysisPage() {
         {(githubAnalysis || linkedinAnalysis) && (
           <div className="space-y-6">
             {/* Overall Score Card */}
-            <Card className="text-center">
+            <Card className="text-center hover:shadow-lg transition-all duration-300">
               <CardHeader>
                 <CardTitle className="text-3xl">Overall Professional Score</CardTitle>
               </CardHeader>
@@ -422,7 +409,7 @@ export default function ProfileAnalysisPage() {
                 <div className="grid lg:grid-cols-2 gap-6">
                   {/* GitHub Summary */}
                   {githubAnalysis && (
-                    <Card>
+                    <Card className="hover:shadow-lg transition-all duration-300">
                       <CardHeader>
                         <CardTitle className="flex items-center space-x-2">
                           <Github className="w-5 h-5 text-gray-800" />
@@ -455,7 +442,7 @@ export default function ProfileAnalysisPage() {
 
                   {/* LinkedIn Summary */}
                   {linkedinAnalysis && (
-                    <Card>
+                    <Card className="hover:shadow-lg transition-all duration-300">
                       <CardHeader>
                         <CardTitle className="flex items-center space-x-2">
                           <Linkedin className="w-5 h-5 text-blue-600" />
@@ -488,7 +475,7 @@ export default function ProfileAnalysisPage() {
                 </div>
 
                 {/* Combined Recommendations */}
-                <Card>
+                <Card className="hover:shadow-lg transition-all duration-300">
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
                       <TrendingUp className="w-5 h-5 text-green-600" />
@@ -498,13 +485,13 @@ export default function ProfileAnalysisPage() {
                   <CardContent>
                     <div className="grid md:grid-cols-2 gap-4">
                       {githubAnalysis?.recommendations.slice(0, 3).map((rec, index) => (
-                        <div key={index} className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
+                        <div key={index} className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200">
                           <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                           <p className="text-sm text-gray-700">{rec}</p>
                         </div>
                       ))}
                       {linkedinAnalysis?.recommendations.slice(0, 3).map((rec, index) => (
-                        <div key={index} className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg">
+                        <div key={index} className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200">
                           <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                           <p className="text-sm text-gray-700">{rec}</p>
                         </div>
@@ -520,7 +507,7 @@ export default function ProfileAnalysisPage() {
                   <>
                     {/* Skills Breakdown */}
                     <div className="grid lg:grid-cols-2 gap-6">
-                      <Card>
+                      <Card className="hover:shadow-lg transition-all duration-300">
                         <CardHeader>
                           <CardTitle className="flex items-center space-x-2">
                             <Code className="w-5 h-5 text-blue-600" />
@@ -533,7 +520,7 @@ export default function ProfileAnalysisPage() {
                               .sort(([,a], [,b]) => b - a)
                               .slice(0, 8)
                               .map(([lang, count]) => (
-                                <div key={lang} className="flex justify-between items-center">
+                                <div key={lang} className="flex justify-between items-center hover:bg-blue-50 p-2 rounded transition-colors duration-200">
                                   <span className="text-sm">{lang}</span>
                                   <Badge variant="secondary">{count}</Badge>
                                 </div>
@@ -542,7 +529,7 @@ export default function ProfileAnalysisPage() {
                         </CardContent>
                       </Card>
 
-                      <Card>
+                      <Card className="hover:shadow-lg transition-all duration-300">
                         <CardHeader>
                           <CardTitle className="flex items-center space-x-2">
                             <Globe className="w-5 h-5 text-green-600" />
@@ -555,7 +542,7 @@ export default function ProfileAnalysisPage() {
                               .sort(([,a], [,b]) => b - a)
                               .slice(0, 8)
                               .map(([framework, count]) => (
-                                <div key={framework} className="flex justify-between items-center">
+                                <div key={framework} className="flex justify-between items-center hover:bg-green-50 p-2 rounded transition-colors duration-200">
                                   <span className="text-sm">{framework}</span>
                                   <Badge variant="secondary">{count}</Badge>
                                 </div>
@@ -566,7 +553,7 @@ export default function ProfileAnalysisPage() {
                     </div>
 
                     {/* Top Repositories */}
-                    <Card>
+                    <Card className="hover:shadow-lg transition-all duration-300">
                       <CardHeader>
                         <CardTitle className="flex items-center space-x-2">
                           <Star className="w-5 h-5 text-yellow-600" />
@@ -576,7 +563,7 @@ export default function ProfileAnalysisPage() {
                       <CardContent>
                         <div className="space-y-4">
                           {githubAnalysis.topRepos.map((repo, index) => (
-                            <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                            <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 transition-all duration-200 hover:shadow-md">
                               <div className="flex items-start justify-between">
                                 <div className="flex-1">
                                   <h4 className="font-medium text-lg">{repo.name}</h4>
@@ -602,7 +589,7 @@ export default function ProfileAnalysisPage() {
                                   rel="noopener noreferrer"
                                   className="ml-4"
                                 >
-                                  <Button variant="outline" size="sm">
+                                  <Button variant="outline" size="sm" className="hover:bg-blue-50 hover:border-blue-300 transition-colors duration-200">
                                     View
                                   </Button>
                                 </a>
@@ -621,7 +608,7 @@ export default function ProfileAnalysisPage() {
                 {linkedinAnalysis && (
                   <>
                     {/* Profile Summary */}
-                    <Card>
+                    <Card className="hover:shadow-lg transition-all duration-300">
                       <CardHeader>
                         <CardTitle className="flex items-center space-x-2">
                           <Linkedin className="w-5 h-5 text-blue-600" />
@@ -648,7 +635,7 @@ export default function ProfileAnalysisPage() {
                     </Card>
 
                     {/* Skills */}
-                    <Card>
+                    <Card className="hover:shadow-lg transition-all duration-300">
                       <CardHeader>
                         <CardTitle className="flex items-center space-x-2">
                           <Award className="w-5 h-5 text-green-600" />
@@ -658,7 +645,7 @@ export default function ProfileAnalysisPage() {
                       <CardContent>
                         <div className="flex flex-wrap gap-2">
                           {linkedinAnalysis.profile.skills.map((skill, index) => (
-                            <Badge key={index} variant="secondary" className="text-sm">
+                            <Badge key={index} variant="secondary" className="text-sm hover:bg-blue-100 transition-colors duration-200">
                               {skill}
                             </Badge>
                           ))}
@@ -667,7 +654,7 @@ export default function ProfileAnalysisPage() {
                     </Card>
 
                     {/* Experience */}
-                    <Card>
+                    <Card className="hover:shadow-lg transition-all duration-300">
                       <CardHeader>
                         <CardTitle className="flex items-center space-x-2">
                           <Briefcase className="w-5 h-5 text-blue-600" />
@@ -677,7 +664,7 @@ export default function ProfileAnalysisPage() {
                       <CardContent>
                         <div className="space-y-4">
                           {linkedinAnalysis.profile.experiences.map((exp, index) => (
-                            <div key={index} className="p-4 border rounded-lg">
+                            <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 transition-all duration-200 hover:shadow-md">
                               <div className="flex items-start justify-between">
                                 <div className="flex-1">
                                   <h4 className="font-medium text-lg">{exp.title}</h4>
@@ -693,7 +680,7 @@ export default function ProfileAnalysisPage() {
                     </Card>
 
                     {/* Certifications */}
-                    <Card>
+                    <Card className="hover:shadow-lg transition-all duration-300">
                       <CardHeader>
                         <CardTitle className="flex items-center space-x-2">
                           <Award className="w-5 h-5 text-purple-600" />
@@ -703,7 +690,7 @@ export default function ProfileAnalysisPage() {
                       <CardContent>
                         <div className="space-y-4">
                           {linkedinAnalysis.profile.certifications.map((cert, index) => (
-                            <div key={index} className="p-4 border rounded-lg">
+                            <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 transition-all duration-200 hover:shadow-md">
                               <h4 className="font-medium text-lg">{cert.name}</h4>
                               <p className="text-gray-600">{cert.issuer}</p>
                               <p className="text-gray-500 text-sm mt-1">{cert.date}</p>
@@ -715,7 +702,7 @@ export default function ProfileAnalysisPage() {
                     </Card>
 
                     {/* Topics of Interest */}
-                    <Card>
+                    <Card className="hover:shadow-lg transition-all duration-300">
                       <CardHeader>
                         <CardTitle className="flex items-center space-x-2">
                           <MessageSquare className="w-5 h-5 text-orange-600" />
@@ -725,7 +712,7 @@ export default function ProfileAnalysisPage() {
                       <CardContent>
                         <div className="flex flex-wrap gap-2">
                           {linkedinAnalysis.profile.topics.map((topic, index) => (
-                            <Badge key={index} variant="outline" className="text-sm">
+                            <Badge key={index} variant="outline" className="text-sm hover:bg-orange-50 transition-colors duration-200">
                               {topic}
                             </Badge>
                           ))}
@@ -748,14 +735,14 @@ export default function ProfileAnalysisPage() {
                   setError(null)
                 }}
                 variant="outline"
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
               >
                 <TrendingUp className="w-4 h-4" />
                 <span>Analyze Another Profile</span>
               </Button>
               <Link href="/dashboard">
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                  <ArrowRight className="w-4 h-4 mr-2" />
+                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <Home className="w-4 h-4 mr-2" />
                   Back to Dashboard
                 </Button>
               </Link>

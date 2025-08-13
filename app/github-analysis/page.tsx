@@ -17,9 +17,12 @@ import {
   ArrowRight,
   CheckCircle,
   Database,
-  Wrench
+  Wrench,
+  Home,
+  Map,
 } from "lucide-react"
 import Link from "next/link"
+import SharedNavigation from "@/components/shared-navigation"
 
 interface GitHubAnalysis {
   username: string
@@ -146,8 +149,10 @@ export default function GitHubAnalysisPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <SharedNavigation />
+      
+      <div className="max-w-6xl mx-auto p-4">
         {/* Scroll Progress Bar */}
         <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
           <div 
@@ -159,13 +164,15 @@ export default function GitHubAnalysisPage() {
         {/* Navigation */}
         <div className="flex items-center justify-between mb-6">
           <Link href="/dashboard">
-            <Button variant="outline" size="sm">
-              ← Back to Dashboard
+            <Button variant="outline" size="sm" className="hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
+              <Home className="w-4 h-4 mr-2" />
+              Back to Dashboard
             </Button>
           </Link>
           <Link href="/profile-analysis">
-            <Button variant="outline" size="sm">
-              Combined Analysis →
+            <Button variant="outline" size="sm" className="hover:bg-purple-50 hover:border-purple-300 transition-all duration-200">
+              <Map className="w-4 h-4 mr-2" />
+              Combined Analysis
             </Button>
           </Link>
         </div>
@@ -182,7 +189,7 @@ export default function GitHubAnalysisPage() {
         </div>
 
         {/* Rate Limit Warning */}
-        <Card className="mb-6 border-2 border-gradient-to-r from-amber-200 to-orange-200 bg-gradient-to-r from-amber-50/80 to-orange-50/80 shadow-lg backdrop-blur-sm">
+        <Card className="mb-6 border-2 border-gradient-to-r from-amber-200 to-orange-200 bg-gradient-to-r from-amber-50/80 to-orange-50/80 shadow-lg backdrop-blur-sm hover:shadow-xl transition-all duration-300">
           <CardContent className="pt-6">
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full flex items-center justify-center shadow-lg">
@@ -210,7 +217,7 @@ export default function GitHubAnalysisPage() {
         </Card>
 
         {/* Input Form */}
-        <Card className="mb-8 shadow-lg">
+        <Card className="mb-8 shadow-lg hover:shadow-xl transition-all duration-300">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Code className="w-5 h-5" />
@@ -231,14 +238,14 @@ export default function GitHubAnalysisPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleAnalysis()}
-                  className="text-lg"
+                  className="text-lg hover:border-blue-300 focus:border-blue-500 transition-colors duration-200"
                 />
               </div>
               <div className="flex items-end">
                 <Button 
                   onClick={handleAnalysis} 
                   disabled={isAnalyzing || !username.trim()}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-6"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   {isAnalyzing ? (
                     <>
@@ -259,7 +266,7 @@ export default function GitHubAnalysisPage() {
 
         {/* Error Display */}
         {error && (
-          <Card className="mb-6 border-red-200 bg-red-50">
+          <Card className="mb-6 border-red-200 bg-red-50 hover:shadow-lg transition-all duration-300">
             <CardContent className="pt-6">
               <div className="flex items-start space-x-3">
                 <div className="text-red-600 mt-1">❌</div>
@@ -284,7 +291,7 @@ export default function GitHubAnalysisPage() {
 
         {/* Loading State */}
         {isAnalyzing && (
-          <Card className="max-w-2xl mx-auto mb-8 border-2 border-blue-200 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 shadow-xl">
+          <Card className="max-w-2xl mx-auto mb-8 border-2 border-blue-200 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 shadow-xl hover:shadow-2xl transition-all duration-300">
             <CardHeader>
               <CardTitle className="text-center text-blue-800">Analyzing GitHub Profile...</CardTitle>
               <CardDescription className="text-center text-blue-600">
@@ -440,7 +447,7 @@ export default function GitHubAnalysisPage() {
 
             {/* Additional Skills */}
             <div className="grid lg:grid-cols-2 gap-6">
-              <Card>
+              <Card className="hover:shadow-lg transition-all duration-300 hover:scale-[1.01]">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Database className="w-5 h-5 text-purple-600" />
@@ -453,7 +460,7 @@ export default function GitHubAnalysisPage() {
                       .sort(([,a], [,b]) => b - a)
                       .slice(0, 6)
                       .map(([db, count]) => (
-                        <div key={db} className="flex justify-between items-center">
+                        <div key={db} className="flex justify-between items-center hover:bg-purple-50 p-2 rounded transition-colors duration-200">
                           <span className="text-sm">{db}</span>
                           <Badge variant="secondary">{count}</Badge>
                         </div>
@@ -462,7 +469,7 @@ export default function GitHubAnalysisPage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="hover:shadow-lg transition-all duration-300 hover:scale-[1.01]">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Wrench className="w-5 h-5 text-orange-600" />
@@ -475,7 +482,7 @@ export default function GitHubAnalysisPage() {
                       .sort(([,a], [,b]) => b - a)
                       .slice(0, 6)
                       .map(([tool, count]) => (
-                        <div key={tool} className="flex justify-between items-center">
+                        <div key={tool} className="flex justify-between items-center hover:bg-orange-50 p-2 rounded transition-colors duration-200">
                           <span className="text-sm">{tool}</span>
                           <Badge variant="secondary">{count}</Badge>
                         </div>
@@ -562,19 +569,20 @@ export default function GitHubAnalysisPage() {
                   setError(null)
                 }}
                 variant="outline"
-                className="flex items-center space-x-2 hover:bg-blue-50 hover:border-blue-300"
+                className="flex items-center space-x-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
               >
                 <TrendingUp className="w-4 h-4" />
                 <span>Analyze Another Profile</span>
               </Button>
               <Link href="/profile-analysis">
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg">
-                  <ArrowRight className="w-4 h-4 mr-2" />
+                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <Map className="w-4 h-4 mr-2" />
                   Combined Analysis
                 </Button>
               </Link>
               <Link href="/dashboard">
-                <Button variant="outline" className="hover:bg-gray-50">
+                <Button variant="outline" className="hover:bg-gray-50 hover:border-gray-300 transition-all duration-200">
+                  <Home className="w-4 h-4 mr-2" />
                   Back to Dashboard
                 </Button>
               </Link>

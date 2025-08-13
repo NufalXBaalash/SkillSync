@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { CheckCircle, Clock, Circle, ExternalLink, BookOpen, FileText, Code } from "lucide-react"
+import { CheckCircle, Clock, Circle, ExternalLink, BookOpen, FileText, Code, Map, ArrowRight, Play, Target, TrendingUp } from "lucide-react"
 import AIChatWidget from "@/components/ai-chat-widget"
+import SharedNavigation from "@/components/shared-navigation"
+import Link from "next/link"
 
 interface Resource {
   title: string
@@ -234,6 +236,7 @@ export default function RoadmapPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50">
+      <SharedNavigation />
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
@@ -246,7 +249,7 @@ export default function RoadmapPage() {
         </div>
 
         {/* Progress Overview */}
-        <Card className="mb-8">
+        <Card className="mb-8 hover:shadow-lg transition-all duration-300">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>{selectedPath.title}</span>
@@ -274,7 +277,7 @@ export default function RoadmapPage() {
                 <div className="absolute left-6 top-12 w-0.5 h-full bg-gray-200 -z-10" />
               )}
 
-              <Card className={`ml-12 ${milestone.status === "in-progress" ? "ring-2 ring-blue-500" : ""}`}>
+              <Card className={`ml-12 ${milestone.status === "in-progress" ? "ring-2 ring-blue-500" : ""} hover:shadow-lg transition-all duration-300 hover:scale-[1.02]`}>
                 <CardHeader>
                   <div className="flex items-start gap-4">
                     <div className="absolute -left-6 mt-1">{getStatusIcon(milestone.status)}</div>
@@ -293,7 +296,7 @@ export default function RoadmapPage() {
                     <h4 className="font-semibold mb-2">Skills You'll Learn</h4>
                     <div className="flex flex-wrap gap-2">
                       {milestone.skills.map((skill) => (
-                        <Badge key={skill} variant="secondary">
+                        <Badge key={skill} variant="secondary" className="hover:bg-blue-100 transition-colors duration-200">
                           {skill}
                         </Badge>
                       ))}
@@ -307,7 +310,7 @@ export default function RoadmapPage() {
                       {milestone.resources.map((resource, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors"
+                          className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-all duration-200 hover:shadow-md"
                         >
                           <div className="flex items-center gap-3">
                             {getResourceIcon(resource.type)}
@@ -318,7 +321,7 @@ export default function RoadmapPage() {
                               </p>
                             </div>
                           </div>
-                          <Button size="sm" variant="ghost">
+                          <Button size="sm" variant="ghost" className="hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
                             <ExternalLink className="h-4 w-4" />
                           </Button>
                         </div>
@@ -327,14 +330,18 @@ export default function RoadmapPage() {
                   </div>
 
                   {/* Action Button */}
-                  {milestone.status === "in-progress" && <Button className="w-full">Continue Learning</Button>}
+                  {milestone.status === "in-progress" && (
+                    <Button className="w-full gradient-bg hover:shadow-lg transition-all duration-300">
+                      Continue Learning
+                    </Button>
+                  )}
                   {milestone.status === "upcoming" && (
-                    <Button variant="outline" className="w-full bg-transparent">
+                    <Button variant="outline" className="w-full bg-transparent hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
                       Start Milestone
                     </Button>
                   )}
                   {milestone.status === "completed" && (
-                    <Button variant="secondary" className="w-full">
+                    <Button variant="secondary" className="w-full hover:bg-green-100 transition-colors duration-200">
                       Review & Practice
                     </Button>
                   )}
@@ -346,8 +353,14 @@ export default function RoadmapPage() {
 
         {/* Action Buttons */}
         <div className="flex gap-4 justify-center mt-8">
-          <Button size="lg">Try Job Simulation</Button>
-          <Button variant="outline" size="lg">
+          <Link href="/simulation">
+            <Button size="lg" className="gradient-bg hover:shadow-lg transition-all duration-300">
+              <Play className="w-4 h-4 mr-2" />
+              Try Job Simulation
+            </Button>
+          </Link>
+          <Button variant="outline" size="lg" className="hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
+            <Target className="w-4 h-4 mr-2" />
             Update Career Goals
           </Button>
         </div>

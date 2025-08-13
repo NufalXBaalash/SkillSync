@@ -20,9 +20,12 @@ import {
   Target,
   Award,
   AlertCircle,
+  Monitor,
+  Map,
 } from "lucide-react"
 import Link from "next/link"
 import AIChatWidget from "@/components/ai-chat-widget"
+import SharedNavigation from "@/components/shared-navigation"
 
 interface SimulationTask {
   id: string
@@ -261,14 +264,15 @@ Successful users typically create their first task within 10 minutes of signup.`
   if (currentStep === "results" && results && selectedTask) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50">
+        <SharedNavigation />
         <div className="container mx-auto px-4 py-8 max-w-4xl">
           <div className="mb-8">
-            <Button variant="ghost" onClick={() => setCurrentStep("selection")} className="mb-4">
+            <Button variant="ghost" onClick={() => setCurrentStep("selection")} className="mb-4 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Simulations
             </Button>
             <div className="text-center">
-              <div className="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Award className="w-8 h-8 text-white" />
               </div>
               <h1 className="text-3xl font-serif font-bold mb-2">Simulation Complete!</h1>
@@ -281,7 +285,7 @@ Successful users typically create their first task within 10 minutes of signup.`
           <div className="grid md:grid-cols-3 gap-8">
             <div className="md:col-span-2 space-y-6">
               {/* Score */}
-              <Card>
+              <Card className="hover:shadow-lg transition-all duration-300">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Target className="w-5 h-5 text-blue-600" />
@@ -303,7 +307,7 @@ Successful users typically create their first task within 10 minutes of signup.`
 
               {/* Strengths & Improvements */}
               <div className="grid md:grid-cols-2 gap-6">
-                <Card>
+                <Card className="hover:shadow-lg transition-all duration-300">
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2 text-green-600">
                       <CheckCircle className="w-5 h-5" />
@@ -322,7 +326,7 @@ Successful users typically create their first task within 10 minutes of signup.`
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="hover:shadow-lg transition-all duration-300">
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2 text-orange-600">
                       <AlertCircle className="w-5 h-5" />
@@ -345,7 +349,7 @@ Successful users typically create their first task within 10 minutes of signup.`
 
             {/* Next Steps Sidebar */}
             <div className="space-y-6">
-              <Card>
+              <Card className="hover:shadow-lg transition-all duration-300">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Lightbulb className="w-5 h-5 text-yellow-600" />
@@ -365,12 +369,13 @@ Successful users typically create their first task within 10 minutes of signup.`
               </Card>
 
               <div className="space-y-3">
-                <Button className="w-full gradient-bg">
+                <Button className="w-full gradient-bg hover:shadow-lg transition-all duration-300">
                   <Play className="w-4 h-4 mr-2" />
                   Try Another Simulation
                 </Button>
                 <Link href="/roadmap">
-                  <Button variant="outline" className="w-full bg-transparent">
+                  <Button variant="outline" className="w-full bg-transparent hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
+                    <Map className="w-4 h-4 mr-2" />
                     View Learning Roadmap
                   </Button>
                 </Link>
@@ -386,9 +391,10 @@ Successful users typically create their first task within 10 minutes of signup.`
   if (currentStep === "task" && selectedTask) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50">
+        <SharedNavigation />
         <div className="container mx-auto px-4 py-8 max-w-6xl">
           <div className="mb-8">
-            <Button variant="ghost" onClick={() => setCurrentStep("selection")} className="mb-4">
+            <Button variant="ghost" onClick={() => setCurrentStep("selection")} className="mb-4 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Simulations
             </Button>
@@ -410,7 +416,7 @@ Successful users typically create their first task within 10 minutes of signup.`
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
               {/* Scenario */}
-              <Card>
+              <Card className="hover:shadow-lg transition-all duration-300">
                 <CardHeader>
                   <CardTitle>Scenario</CardTitle>
                 </CardHeader>
@@ -421,7 +427,7 @@ Successful users typically create their first task within 10 minutes of signup.`
 
               {/* Resources */}
               {selectedTask.resources && (
-                <Card>
+                <Card className="hover:shadow-lg transition-all duration-300">
                   <CardHeader>
                     <CardTitle>Resources</CardTitle>
                     <CardDescription>Use this information to complete your task</CardDescription>
@@ -448,7 +454,7 @@ Successful users typically create their first task within 10 minutes of signup.`
               )}
 
               {/* Deliverables */}
-              <Card>
+              <Card className="hover:shadow-lg transition-all duration-300">
                 <CardHeader>
                   <CardTitle>Your Deliverables</CardTitle>
                   <CardDescription>Complete each section below</CardDescription>
@@ -463,7 +469,7 @@ Successful users typically create their first task within 10 minutes of signup.`
                         placeholder={`Enter your response for: ${deliverable}`}
                         value={submissions[`deliverable-${index}`] || ""}
                         onChange={(e) => updateSubmission(`deliverable-${index}`, e.target.value)}
-                        className="min-h-[120px]"
+                        className="min-h-[120px] hover:border-blue-300 focus:border-blue-500 transition-colors duration-200"
                       />
                     </div>
                   ))}
@@ -473,7 +479,7 @@ Successful users typically create their first task within 10 minutes of signup.`
 
             {/* Sidebar */}
             <div className="space-y-6">
-              <Card className="sticky top-8">
+              <Card className="sticky top-8 hover:shadow-lg transition-all duration-300">
                 <CardHeader>
                   <CardTitle className="text-lg">Task Overview</CardTitle>
                 </CardHeader>
@@ -496,7 +502,7 @@ Successful users typically create their first task within 10 minutes of signup.`
                       disabled={selectedTask.deliverables.some(
                         (_, index) => !submissions[`deliverable-${index}`]?.trim(),
                       )}
-                      className="w-full gradient-bg"
+                      className="w-full gradient-bg hover:shadow-lg transition-all duration-300"
                     >
                       Submit for Evaluation
                     </Button>
@@ -505,7 +511,7 @@ Successful users typically create their first task within 10 minutes of signup.`
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="hover:shadow-lg transition-all duration-300">
                 <CardHeader>
                   <CardTitle className="text-lg">Tips for Success</CardTitle>
                 </CardHeader>
@@ -538,9 +544,10 @@ Successful users typically create their first task within 10 minutes of signup.`
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50">
+      <SharedNavigation />
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="mb-8">
-          <Link href="/roadmap" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-4">
+          <Link href="/roadmap" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-4 transition-colors duration-200">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Roadmap
           </Link>
@@ -555,7 +562,7 @@ Successful users typically create their first task within 10 minutes of signup.`
 
         <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6">
           {simulationTasks.map((task) => (
-            <Card key={task.id} className="card-hover border-0 shadow-lg">
+            <Card key={task.id} className="card-hover border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
               <CardHeader>
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center space-x-2">
@@ -596,7 +603,7 @@ Successful users typically create their first task within 10 minutes of signup.`
                     </div>
                   </div>
 
-                  <Button onClick={() => handleTaskStart(task)} className="w-full gradient-bg">
+                  <Button onClick={() => handleTaskStart(task)} className="w-full gradient-bg hover:shadow-lg transition-all duration-300">
                     <Play className="w-4 h-4 mr-2" />
                     Start Simulation
                   </Button>
@@ -607,7 +614,7 @@ Successful users typically create their first task within 10 minutes of signup.`
         </div>
 
         {/* Coming Soon */}
-        <Card className="mt-8 border-dashed border-2 border-gray-300">
+        <Card className="mt-8 border-dashed border-2 border-gray-300 hover:shadow-lg transition-all duration-300">
           <CardContent className="text-center py-12">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Clock className="w-8 h-8 text-gray-400" />

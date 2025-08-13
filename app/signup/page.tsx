@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ArrowLeft, Mail, Lock, User, Github, Linkedin, Target } from "lucide-react"
+import { ArrowLeft, Mail, Lock, User, Github, Linkedin, Target, Home } from "lucide-react"
 import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter } from "next/navigation"
@@ -103,13 +103,13 @@ export default function SignupPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="mb-8">
-          <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-6">
+          <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-6 transition-colors duration-200">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
           </Link>
           <div className="text-center">
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <div className="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center shadow-lg">
                 <Target className="w-6 h-6 text-white" />
               </div>
               <span className="text-2xl font-serif font-bold gradient-text">SkillSync</span>
@@ -119,7 +119,7 @@ export default function SignupPage() {
           </div>
         </div>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-lg hover:shadow-xl transition-all duration-300 border-0">
           <CardHeader className="space-y-1">
             <CardTitle className="text-xl text-center">Create Account</CardTitle>
             <CardDescription className="text-center">
@@ -138,7 +138,7 @@ export default function SignupPage() {
             <div className="space-y-3">
               <Button
                 variant="outline"
-                className="w-full bg-transparent"
+                className="w-full bg-transparent hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
                 onClick={() => handleSocialSignup("google")}
                 disabled={isLoading}
               >
@@ -164,11 +164,21 @@ export default function SignupPage() {
               </Button>
 
               <div className="grid grid-cols-2 gap-3">
-                <Button variant="outline" onClick={() => handleSocialSignup("github")} disabled={isLoading}>
+                <Button 
+                  variant="outline" 
+                  onClick={() => handleSocialSignup("github")} 
+                  disabled={isLoading}
+                  className="hover:bg-gray-50 hover:border-gray-300 transition-all duration-200"
+                >
                   <Github className="w-4 h-4 mr-2" />
                   GitHub
                 </Button>
-                <Button variant="outline" onClick={() => handleSocialSignup("linkedin")} disabled={isLoading}>
+                <Button 
+                  variant="outline" 
+                  onClick={() => handleSocialSignup("linkedin")} 
+                  disabled={isLoading}
+                  className="hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
+                >
                   <Linkedin className="w-4 h-4 mr-2" />
                   LinkedIn
                 </Button>
@@ -197,7 +207,7 @@ export default function SignupPage() {
                       placeholder="John"
                       value={formData.firstName}
                       onChange={(e) => updateFormData("firstName", e.target.value)}
-                      className="pl-10"
+                      className="pl-10 hover:border-blue-300 focus:border-blue-500 transition-colors duration-200"
                       required
                     />
                   </div>
@@ -210,6 +220,7 @@ export default function SignupPage() {
                     placeholder="Doe"
                     value={formData.lastName}
                     onChange={(e) => updateFormData("lastName", e.target.value)}
+                    className="hover:border-blue-300 focus:border-blue-500 transition-colors duration-200"
                     required
                   />
                 </div>
@@ -225,7 +236,7 @@ export default function SignupPage() {
                     placeholder="john@example.com"
                     value={formData.email}
                     onChange={(e) => updateFormData("email", e.target.value)}
-                    className="pl-10"
+                    className="pl-10 hover:border-blue-300 focus:border-blue-500 transition-colors duration-200"
                     required
                   />
                 </div>
@@ -241,7 +252,7 @@ export default function SignupPage() {
                     placeholder="Create a strong password"
                     value={formData.password}
                     onChange={(e) => updateFormData("password", e.target.value)}
-                    className="pl-10"
+                    className="pl-10 hover:border-blue-300 focus:border-blue-500 transition-colors duration-200"
                     required
                   />
                 </div>
@@ -257,7 +268,7 @@ export default function SignupPage() {
                     placeholder="Confirm your password"
                     value={formData.confirmPassword}
                     onChange={(e) => updateFormData("confirmPassword", e.target.value)}
-                    className="pl-10"
+                    className="pl-10 hover:border-blue-300 focus:border-blue-500 transition-colors duration-200"
                     required
                   />
                 </div>
@@ -271,24 +282,24 @@ export default function SignupPage() {
                 />
                 <Label htmlFor="terms" className="text-sm">
                   I agree to the{" "}
-                  <Link href="#" className="text-blue-600 hover:text-blue-700">
+                  <Link href="#" className="text-blue-600 hover:text-blue-700 transition-colors duration-200">
                     Terms of Service
                   </Link>{" "}
                   and{" "}
-                  <Link href="#" className="text-blue-600 hover:text-blue-700">
+                  <Link href="#" className="text-blue-600 hover:text-blue-700 transition-colors duration-200">
                     Privacy Policy
                   </Link>
                 </Label>
               </div>
 
-              <Button type="submit" className="w-full gradient-bg" disabled={isLoading}>
+              <Button type="submit" className="w-full gradient-bg hover:shadow-lg transition-all duration-300" disabled={isLoading}>
                 {isLoading ? "Creating account..." : "Create Account"}
               </Button>
             </form>
 
             <div className="text-center text-sm">
               <span className="text-gray-600">Already have an account? </span>
-              <Link href="/login" className="text-blue-600 hover:text-blue-700 font-medium">
+              <Link href="/login" className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200">
                 Sign in
               </Link>
             </div>

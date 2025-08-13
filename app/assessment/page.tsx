@@ -24,9 +24,12 @@ import {
   CheckCircle,
   AlertCircle,
   ArrowRight,
+  Home,
+  ClipboardCheck,
 } from "lucide-react"
 import Link from "next/link"
 import AIChatWidget from "@/components/ai-chat-widget"
+import SharedNavigation from "@/components/shared-navigation"
 
 interface SkillAssessment {
   detectedSkills: Array<{ name: string; level: number; category: string }>
@@ -135,20 +138,23 @@ export default function AssessmentPage() {
 
   if (currentStep === "analyzing") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
-              <Brain className="w-8 h-8 text-white animate-pulse" />
-            </div>
-            <CardTitle>AI Analysis in Progress</CardTitle>
-            <CardDescription>Our AI is analyzing your skills and experience</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Progress value={analysisProgress} className="h-2" />
-            <p className="text-center text-sm text-gray-600">{analysisProgress}% Complete</p>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50">
+        <SharedNavigation />
+        <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
+          <Card className="w-full max-w-md shadow-xl border-0">
+            <CardHeader className="text-center">
+              <div className="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <Brain className="w-8 h-8 text-white animate-pulse" />
+              </div>
+              <CardTitle className="text-xl">AI Analysis in Progress</CardTitle>
+              <CardDescription>Our AI is analyzing your skills and experience</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Progress value={analysisProgress} className="h-2" />
+              <p className="text-center text-sm text-gray-600">{analysisProgress}% Complete</p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     )
   }
@@ -156,9 +162,10 @@ export default function AssessmentPage() {
   if (currentStep === "results" && assessment) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50">
+        <SharedNavigation />
         <div className="container mx-auto px-4 py-8 max-w-6xl">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
               <CheckCircle className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent mb-4">
@@ -170,7 +177,7 @@ export default function AssessmentPage() {
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
               {/* Detected Skills */}
-              <Card>
+              <Card className="hover:shadow-lg transition-all duration-300">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Target className="w-5 h-5 text-blue-600" />
@@ -181,7 +188,7 @@ export default function AssessmentPage() {
                 <CardContent>
                   <div className="grid md:grid-cols-2 gap-4">
                     {assessment.detectedSkills.map((skill, index) => (
-                      <div key={index} className="space-y-2">
+                      <div key={index} className="space-y-2 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
                         <div className="flex justify-between items-center">
                           <span className="font-medium">{skill.name}</span>
                           <Badge variant="outline" className="text-xs">
@@ -199,7 +206,7 @@ export default function AssessmentPage() {
               </Card>
 
               {/* Skill Gaps */}
-              <Card>
+              <Card className="hover:shadow-lg transition-all duration-300">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <AlertCircle className="w-5 h-5 text-orange-600" />
@@ -209,7 +216,7 @@ export default function AssessmentPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {assessment.skillGaps.map((gap, index) => (
-                    <div key={index} className="border rounded-lg p-4">
+                    <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-all duration-200">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-semibold">{gap.skill}</h4>
                         <Badge variant={gap.importance === "High" ? "destructive" : "secondary"}>
@@ -225,7 +232,7 @@ export default function AssessmentPage() {
 
             {/* Career Matches Sidebar */}
             <div className="space-y-6">
-              <Card>
+              <Card className="hover:shadow-lg transition-all duration-300">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <TrendingUp className="w-5 h-5 text-green-600" />
@@ -235,7 +242,7 @@ export default function AssessmentPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {assessment.careerMatch.map((match, index) => (
-                    <div key={index} className="space-y-2">
+                    <div key={index} className="space-y-2 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
                       <div className="flex justify-between items-center">
                         <h4 className="font-medium">{match.role}</h4>
                         <Badge variant={match.match >= 80 ? "default" : "secondary"}>{match.match}%</Badge>
@@ -250,13 +257,13 @@ export default function AssessmentPage() {
               {/* Action Buttons */}
               <div className="space-y-3">
                 <Link href="/roadmap">
-                  <Button className="w-full gradient-bg">
+                  <Button className="w-full gradient-bg hover:shadow-lg transition-all duration-300">
                     Get My Career Roadmap
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
                 <Link href="/simulation">
-                  <Button variant="outline" className="w-full bg-transparent">
+                  <Button variant="outline" className="w-full bg-transparent hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
                     Try Job Simulation
                   </Button>
                 </Link>
@@ -271,6 +278,7 @@ export default function AssessmentPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50">
+      <SharedNavigation />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent mb-4">
@@ -290,7 +298,7 @@ export default function AssessmentPage() {
           </TabsList>
 
           <TabsContent value="upload" className="space-y-6">
-            <Card>
+            <Card className="hover:shadow-lg transition-all duration-300">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Upload className="w-5 h-5" />
@@ -299,7 +307,7 @@ export default function AssessmentPage() {
                 <CardDescription>Upload your resume, portfolio, or any relevant documents</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors duration-200">
                   <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-lg font-medium mb-2">Drop files here or click to browse</p>
                   <p className="text-sm text-gray-500 mb-4">Supports PDF, DOC, DOCX files up to 10MB</p>
@@ -312,7 +320,7 @@ export default function AssessmentPage() {
                     id="file-upload"
                   />
                   <label htmlFor="file-upload">
-                    <Button variant="outline" className="cursor-pointer bg-transparent">
+                    <Button variant="outline" className="cursor-pointer bg-transparent hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
                       Choose Files
                     </Button>
                   </label>
@@ -322,12 +330,12 @@ export default function AssessmentPage() {
                   <div className="space-y-2">
                     <h4 className="font-medium">Uploaded Files:</h4>
                     {uploadedFiles.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
                         <div className="flex items-center space-x-2">
                           <FileText className="w-4 h-4 text-blue-600" />
                           <span className="text-sm">{file.name}</span>
                         </div>
-                        <Button variant="ghost" size="sm" onClick={() => removeFile(index)}>
+                        <Button variant="ghost" size="sm" onClick={() => removeFile(index)} className="hover:bg-red-50 hover:text-red-600">
                           <X className="w-4 h-4" />
                         </Button>
                       </div>
@@ -339,7 +347,7 @@ export default function AssessmentPage() {
           </TabsContent>
 
           <TabsContent value="social" className="space-y-6">
-            <Card>
+            <Card className="hover:shadow-lg transition-all duration-300">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Github className="w-5 h-5" />
@@ -357,6 +365,7 @@ export default function AssessmentPage() {
                       placeholder="https://github.com/yourusername"
                       value={socialLinks.github}
                       onChange={(e) => setSocialLinks((prev) => ({ ...prev, github: e.target.value }))}
+                      className="hover:border-blue-300 focus:border-blue-500 transition-colors duration-200"
                     />
                   </div>
                 </div>
@@ -370,6 +379,7 @@ export default function AssessmentPage() {
                       placeholder="https://linkedin.com/in/yourprofile"
                       value={socialLinks.linkedin}
                       onChange={(e) => setSocialLinks((prev) => ({ ...prev, linkedin: e.target.value }))}
+                      className="hover:border-blue-300 focus:border-blue-500 transition-colors duration-200"
                     />
                   </div>
                 </div>
@@ -378,7 +388,7 @@ export default function AssessmentPage() {
           </TabsContent>
 
           <TabsContent value="manual" className="space-y-6">
-            <Card>
+            <Card className="hover:shadow-lg transition-all duration-300">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Plus className="w-5 h-5" />
@@ -393,8 +403,9 @@ export default function AssessmentPage() {
                     value={newSkill}
                     onChange={(e) => setNewSkill(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && addManualSkill()}
+                    className="hover:border-blue-300 focus:border-blue-500 transition-colors duration-200"
                   />
-                  <Button onClick={addManualSkill}>
+                  <Button onClick={addManualSkill} className="hover:shadow-md transition-all duration-200">
                     <Plus className="w-4 h-4" />
                   </Button>
                 </div>
@@ -404,9 +415,9 @@ export default function AssessmentPage() {
                     <h4 className="font-medium">Your Skills:</h4>
                     <div className="flex flex-wrap gap-2">
                       {manualSkills.map((skill, index) => (
-                        <Badge key={index} variant="secondary" className="flex items-center space-x-1">
+                        <Badge key={index} variant="secondary" className="flex items-center space-x-1 hover:bg-blue-100 transition-colors duration-200">
                           <span>{skill}</span>
-                          <button onClick={() => removeManualSkill(skill)} className="ml-1 hover:text-red-500">
+                          <button onClick={() => removeManualSkill(skill)} className="ml-1 hover:text-red-500 transition-colors duration-200">
                             <X className="w-3 h-3" />
                           </button>
                         </Badge>
@@ -420,7 +431,7 @@ export default function AssessmentPage() {
                   <Textarea
                     id="experience"
                     placeholder="Tell us about your experience, projects, or career goals..."
-                    className="min-h-[100px]"
+                    className="min-h-[100px] hover:border-blue-300 focus:border-blue-500 transition-colors duration-200"
                   />
                 </div>
               </CardContent>
@@ -435,7 +446,7 @@ export default function AssessmentPage() {
               uploadedFiles.length === 0 && !socialLinks.github && !socialLinks.linkedin && manualSkills.length === 0
             }
             size="lg"
-            className="gradient-bg"
+            className="gradient-bg hover:shadow-lg transition-all duration-300"
           >
             <Brain className="w-5 h-5 mr-2" />
             Start AI Analysis
