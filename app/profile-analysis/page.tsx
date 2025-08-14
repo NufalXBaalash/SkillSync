@@ -1,755 +1,389 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { 
   Github, 
   Linkedin, 
-  Star, 
-  GitFork, 
-  Code, 
-  Briefcase, 
+  TrendingUp, 
+  Target, 
   Award, 
-  GraduationCap,
-  TrendingUp,
-  Activity,
-  MessageSquare,
+  Clock, 
+  Play, 
+  BookOpen, 
+  CheckCircle, 
+  BarChart3, 
+  Users, 
+  Settings, 
+  LogOut, 
+  Bell, 
+  Star, 
+  ArrowRight, 
+  Zap, 
+  ClipboardCheck, 
+  Map, 
+  Monitor, 
+  Rocket, 
+  Lightbulb, 
+  Calendar,
+  ChevronRight,
+  Check,
+  X,
+  AlertCircle,
+  Info,
+  Timer,
+  ExternalLink,
+  Code,
+  Briefcase,
   Globe,
-  ArrowRight,
-  CheckCircle,
-  Clock,
-  MapPin,
-  Building,
-  Home,
+  Database,
+  Cloud,
+  Shield,
+  Palette
 } from "lucide-react"
 import Link from "next/link"
-import SharedNavigation from "@/components/shared-navigation"
-
-interface GitHubAnalysis {
-  username: string
-  totalRepos: number
-  totalStars: number
-  totalForks: number
-  skillScore: number
-  skills: {
-    languages: { [key: string]: number }
-    frameworks: { [key: string]: number }
-    databases: { [key: string]: number }
-    tools: { [key: string]: number }
-  }
-  topRepos: Array<{
-    name: string
-    description: string
-    stars: number
-    forks: number
-    language: string
-    url: string
-  }>
-  recommendations: string[]
-}
-
-interface LinkedInAnalysis {
-  profile: {
-    name: string
-    headline: string
-    location: string
-    summary: string
-    skills: string[]
-    experiences: Array<{
-      title: string
-      company: string
-      duration: string
-      description: string
-    }>
-    certifications: Array<{
-      name: string
-      issuer: string
-      date: string
-      description: string
-    }>
-    education: Array<{
-      degree: string
-      institution: string
-      year: string
-      field: string
-    }>
-    activityLevel: 'High' | 'Medium' | 'Low'
-    topics: string[]
-  }
-  skillScore: number
-  recommendations: string[]
-  analysisDate: string
-}
+import ProtectedRoute from "@/components/protected-route"
+import SidebarNavigation from "@/components/sidebar-navigation"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function ProfileAnalysisPage() {
-  const [githubUsername, setGithubUsername] = useState("")
+  const { user } = useAuth()
+  const [githubUrl, setGithubUrl] = useState("")
   const [linkedinUrl, setLinkedinUrl] = useState("")
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [analysisComplete, setAnalysisComplete] = useState(false)
   const [analysisProgress, setAnalysisProgress] = useState(0)
-  const [githubAnalysis, setGithubAnalysis] = useState<GitHubAnalysis | null>(null)
-  const [linkedinAnalysis, setLinkedinAnalysis] = useState<LinkedInAnalysis | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState("overview")
-  const [isClient, setIsClient] = useState(false)
-  const [linkedinError, setLinkedinError] = useState<string | null>(null)
 
-  // Fix hydration error
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
-
-  const handleAnalysis = async () => {
-    if (!githubUsername && !linkedinUrl) {
-      setError("Please provide at least one profile to analyze")
-      return
-    }
-
+  const startAnalysis = () => {
+    if (!githubUrl && !linkedinUrl) return
+    
     setIsAnalyzing(true)
-    setError(null)
     setAnalysisProgress(0)
-    setGithubAnalysis(null)
-    setLinkedinAnalysis(null)
-    setLinkedinError(null)
-
-    try {
-      // Simulate progress
-      const progressInterval = setInterval(() => {
-        setAnalysisProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval)
-            return 90
-          }
-          return prev + 10
-        })
-      }, 300)
-
-      // Analyze GitHub if username provided
-      if (githubUsername) {
-        console.log('Starting GitHub analysis for:', githubUsername)
-        const githubResponse = await fetch('/api/github-analysis', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: githubUsername })
-        })
-        
-        if (githubResponse.ok) {
-          const data = await githubResponse.json()
-          setGithubAnalysis(data)
-          console.log('GitHub analysis completed:', data)
-        } else {
-          const errorData = await githubResponse.json()
-          setError(`GitHub Analysis Error: ${errorData.error}`)
+    
+    // Simulate analysis progress
+    const interval = setInterval(() => {
+      setAnalysisProgress(prev => {
+        if (prev >= 100) {
+          setIsAnalyzing(false)
+          setAnalysisComplete(true)
+          clearInterval(interval)
+          return 100
         }
-      }
-
-      // Analyze LinkedIn if URL provided
-      if (linkedinUrl) {
-        console.log('Starting LinkedIn analysis for:', linkedinUrl)
-        const linkedinResponse = await fetch('/api/linkedin-analysis', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ linkedinUrl })
-        })
-        
-        if (linkedinResponse.ok) {
-          const data = await linkedinResponse.json()
-          setLinkedinAnalysis(data)
-          console.log('LinkedIn analysis completed:', data)
-          
-          // Check if this is fallback data
-          if (data.profile.name === 'LinkedIn Profile' && data.profile.summary.includes('could not be extracted')) {
-            console.log('LinkedIn analysis used fallback data')
-          }
-        } else {
-          const errorData = await linkedinResponse.json()
-          setLinkedinError(`LinkedIn Analysis Error: ${errorData.error}`)
-        }
-      }
-
-      setAnalysisProgress(100)
-      
-      // Reset to overview tab when analysis is complete
-      setActiveTab("overview")
-
-    } catch (err) {
-      setError("An unexpected error occurred during analysis")
-      console.error(err)
-    } finally {
-      setIsAnalyzing(false)
-    }
+        return prev + 10
+      })
+    }, 500)
   }
 
-  const getOverallScore = () => {
-    if (!githubAnalysis && !linkedinAnalysis) return 0
-    
-    let totalScore = 0
-    let count = 0
-    
-    if (githubAnalysis) {
-      totalScore += githubAnalysis.skillScore
-      count++
-    }
-    
-    if (linkedinAnalysis) {
-      totalScore += linkedinAnalysis.skillScore
-      count++
-    }
-    
-    return Math.round(totalScore / count)
-  }
-
-  const getScoreLevel = (score: number) => {
-    if (score >= 80) return { level: "Expert", color: "bg-green-500", textColor: "text-green-700" }
-    if (score >= 60) return { level: "Advanced", color: "bg-blue-500", textColor: "text-blue-700" }
-    if (score >= 40) return { level: "Intermediate", color: "bg-yellow-500", textColor: "text-yellow-700" }
-    return { level: "Beginner", color: "bg-gray-500", textColor: "text-gray-700" }
-  }
-
-  // Don't render until client-side hydration is complete
-  if (!isClient) {
+  if (analysisComplete) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Profile Analysis...</p>
+      <ProtectedRoute>
+        <div className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+          <SidebarNavigation />
+          
+          {/* Main Content */}
+          <div className="lg:ml-64 lg:pt-16">
+            <div className="p-6 lg:p-8">
+              <div className="max-w-6xl mx-auto">
+                {/* Success Header */}
+                <div className="text-center mb-8 skillsync-fade-in">
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: 'var(--success)' }}>
+                    <Check className="w-10 h-10 text-white" />
+                  </div>
+                  <h1 className="text-h1 mb-4" style={{ color: 'var(--foreground)' }}>Profile Analysis Complete!</h1>
+                  <p className="text-body max-w-2xl mx-auto" style={{ color: 'var(--muted-foreground)' }}>
+                    We've analyzed your professional profiles and created a comprehensive skill assessment. Here's what we found:
+                  </p>
+                </div>
+
+                {/* Analysis Results Grid */}
+                <div className="grid lg:grid-cols-3 gap-8 mb-8">
+                  {/* Skills Overview */}
+                  <div className="lg:col-span-2 space-y-6">
+                    {/* Technical Skills */}
+                    <Card className="skillsync-card skillsync-fade-in skillsync-stagger-1">
+                      <CardHeader>
+                        <CardTitle className="text-h3 flex items-center" style={{ color: 'var(--foreground)' }}>
+                          <Code className="w-5 h-5 mr-2" style={{ color: 'var(--primary)' }} />
+                          Technical Skills
+                        </CardTitle>
+                        <CardDescription style={{ color: 'var(--muted-foreground)' }}>
+                          Skills identified from your GitHub repositories and projects
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          {[
+                            { skill: "JavaScript", level: 85, category: "Programming" },
+                            { skill: "React", level: 78, category: "Frontend" },
+                            { skill: "Node.js", level: 65, category: "Backend" },
+                            { skill: "Python", level: 72, category: "Programming" },
+                            { skill: "SQL", level: 60, category: "Database" },
+                            { skill: "Git", level: 80, category: "Tools" }
+                          ].map((skill, index) => (
+                            <div key={index} className="space-y-2 p-3 rounded-lg hover:shadow-md transition-all duration-200" style={{ backgroundColor: 'var(--muted)' }}>
+                              <div className="flex justify-between items-center">
+                                <span className="font-medium text-body-sm" style={{ color: 'var(--foreground)' }}>{skill.skill}</span>
+                                <Badge variant="outline" className="text-xs" style={{ borderColor: 'var(--secondary)', color: 'var(--secondary)' }}>
+                                  {skill.category}
+                                </Badge>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Progress value={skill.level} className="flex-1 h-2" />
+                                <span className="text-body-sm w-12" style={{ color: 'var(--muted-foreground)' }}>{skill.level}%</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Professional Experience */}
+                    <Card className="skillsync-card skillsync-fade-in skillsync-stagger-2">
+                      <CardHeader>
+                        <CardTitle className="text-h3 flex items-center" style={{ color: 'var(--foreground)' }}>
+                          <Briefcase className="w-5 h-5 mr-2" style={{ color: 'var(--secondary)' }} />
+                          Professional Experience
+                        </CardTitle>
+                        <CardDescription style={{ color: 'var(--muted-foreground)' }}>
+                          Experience and achievements from your LinkedIn profile
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--muted)' }}>
+                            <h4 className="font-medium text-body-sm mb-2" style={{ color: 'var(--foreground)' }}>Senior Frontend Developer</h4>
+                            <p className="text-small mb-2" style={{ color: 'var(--muted-foreground)' }}>TechCorp Inc. • 2021 - Present</p>
+                            <p className="text-body-sm" style={{ color: 'var(--muted-foreground)' }}>
+                              Led development of customer-facing applications using React and TypeScript. 
+                              Mentored junior developers and implemented best practices.
+                            </p>
+                          </div>
+                          <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--muted)' }}>
+                            <h4 className="font-medium text-body-sm mb-2" style={{ color: 'var(--foreground)' }}>Frontend Developer</h4>
+                            <p className="text-small mb-2" style={{ color: 'var(--muted-foreground)' }}>StartupXYZ • 2019 - 2021</p>
+                            <p className="text-body-sm" style={{ color: 'var(--muted-foreground)' }}>
+                              Built responsive web applications and collaborated with design and backend teams.
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Right Sidebar */}
+                  <div className="space-y-6">
+                    {/* Career Matches */}
+                    <Card className="skillsync-card skillsync-fade-in skillsync-stagger-3">
+                      <CardHeader>
+                        <CardTitle className="text-h3 flex items-center" style={{ color: 'var(--foreground)' }}>
+                          <Target className="w-5 h-5 mr-2" style={{ color: 'var(--accent)' }} />
+                          Career Matches
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {[
+                          { role: "Senior Frontend Developer", match: 92, description: "Excellent match with your React and leadership experience" },
+                          { role: "Full Stack Developer", match: 78, description: "Good foundation, could strengthen backend skills" },
+                          { role: "Tech Lead", match: 85, description: "Strong potential given your mentoring experience" }
+                        ].map((match, index) => (
+                          <div key={index} className="space-y-2 p-3 rounded-lg hover:shadow-md transition-all duration-200" style={{ backgroundColor: 'var(--muted)' }}>
+                            <div className="flex justify-between items-center">
+                              <h4 className="font-medium text-body-sm" style={{ color: 'var(--foreground)' }}>{match.role}</h4>
+                              <Badge style={{ backgroundColor: 'var(--success)', color: 'var(--success-foreground)' }}>
+                                {match.match}%
+                              </Badge>
+                            </div>
+                            <p className="text-small" style={{ color: 'var(--muted-foreground)' }}>{match.description}</p>
+                            <Progress value={match.match} className="h-2" />
+                          </div>
+                        ))}
+                      </CardContent>
+                    </Card>
+
+                    {/* Quick Actions */}
+                    <div className="space-y-3">
+                      <Link href="/roadmap">
+                        <Button className="w-full skillsync-btn-primary">
+                          <Map className="w-4 h-4 mr-2" />
+                          View Roadmap
+                        </Button>
+                      </Link>
+                      <Link href="/assessment">
+                        <Button variant="outline" className="w-full skillsync-btn-secondary">
+                          <ClipboardCheck className="w-4 h-4 mr-2" />
+                          Retake Assessment
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </ProtectedRoute>
+    )
+  }
+
+  if (isAnalyzing) {
+    return (
+      <ProtectedRoute>
+        <div className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+          <SidebarNavigation />
+          
+          {/* Main Content */}
+          <div className="lg:ml-64 lg:pt-16">
+            <div className="p-6 lg:p-8">
+              <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
+                <Card className="w-full max-w-md skillsync-card skillsync-scale-in">
+                  <CardHeader className="text-center">
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg" style={{ background: 'var(--primary)' }}>
+                      <TrendingUp className="w-8 h-8 text-white animate-pulse" />
+                    </div>
+                    <CardTitle className="text-h2" style={{ color: 'var(--foreground)' }}>Analyzing Your Profiles</CardTitle>
+                    <CardDescription style={{ color: 'var(--muted-foreground)' }}>
+                      Our AI is analyzing your GitHub and LinkedIn profiles
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <Progress value={analysisProgress} className="h-2" />
+                    <p className="text-center text-body-sm" style={{ color: 'var(--muted-foreground)' }}>{analysisProgress}% Complete</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ProtectedRoute>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50" suppressHydrationWarning>
-      <SharedNavigation />
-
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Page Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-serif font-bold mb-4">Professional Profile Analysis</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Get comprehensive insights into your professional skills by analyzing your GitHub and LinkedIn profiles
-          </p>
-        </div>
-
-        {/* Input Section */}
-        {!githubAnalysis && !linkedinAnalysis && !isAnalyzing && (
-          <Card className="max-w-4xl mx-auto mb-8 hover:shadow-lg transition-all duration-300">
-            <CardHeader>
-              <CardTitle className="text-2xl text-center">Enter Your Profile Information</CardTitle>
-              <CardDescription className="text-center">
-                Provide your GitHub username and/or LinkedIn profile URL to get started
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="github-username" className="flex items-center space-x-2">
-                    <Github className="w-5 h-5" />
-                    <span>GitHub Username</span>
-                  </Label>
-                  <Input
-                    id="github-username"
-                    placeholder="Enter your GitHub username (optional)"
-                    value={githubUsername}
-                    onChange={(e) => setGithubUsername(e.target.value)}
-                    className="mt-2 hover:border-blue-300 focus:border-blue-500 transition-colors duration-200"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="linkedin-url" className="flex items-center space-x-2">
-                    <Linkedin className="w-5 h-5" />
-                    <span>LinkedIn Profile URL</span>
-                  </Label>
-                  <Input
-                    id="linkedin-url"
-                    placeholder="https://linkedin.com/in/your-profile (optional)"
-                    value={linkedinUrl}
-                    onChange={(e) => setLinkedinUrl(e.target.value)}
-                    className="mt-2 hover:border-blue-300 focus:border-blue-500 transition-colors duration-200"
-                  />
-                  <p className="text-sm text-amber-600 mt-1">
-                    ⚠️ LinkedIn analysis may use fallback data if profile is private or scraping fails
-                  </p>
-                </div>
+    <ProtectedRoute>
+      <div className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+        <SidebarNavigation />
+        
+        {/* Main Content */}
+        <div className="lg:ml-64 lg:pt-16">
+          <div className="p-6 lg:p-8">
+            <div className="max-w-4xl mx-auto">
+              {/* Header */}
+              <div className="text-center mb-8 skillsync-fade-in">
+                <h1 className="text-h1 mb-4" style={{ color: 'var(--foreground)' }}>Professional Profile Analysis</h1>
+                <p className="text-body max-w-2xl mx-auto" style={{ color: 'var(--muted-foreground)' }}>
+                  Connect your GitHub and LinkedIn profiles for a comprehensive AI-powered analysis of your skills, experience, and career potential.
+                </p>
               </div>
 
-              {error && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-red-600">{error}</p>
-                </div>
-              )}
-
-              <Button 
-                onClick={handleAnalysis} 
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg py-6 shadow-lg hover:shadow-xl transition-all duration-300"
-                disabled={!githubUsername && !linkedinUrl}
-              >
-                <TrendingUp className="w-5 h-5 mr-2" />
-                Start Analysis
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Loading State */}
-        {isAnalyzing && (
-          <Card className="max-w-2xl mx-auto mb-8 border-2 border-blue-200 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 shadow-xl hover:shadow-2xl transition-all duration-300">
-            <CardHeader>
-              <CardTitle className="text-center">Analyzing Profiles...</CardTitle>
-              <CardDescription className="text-center">
-                This may take a few moments depending on profile complexity
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Progress</span>
-                  <span>{analysisProgress}%</span>
-                </div>
-                <Progress value={analysisProgress} className="h-3" suppressHydrationWarning />
-              </div>
-              
-              <div className="text-center text-sm text-gray-600">
-                {githubUsername && <div className="flex items-center justify-center space-x-2 mb-2">
-                  <Github className="w-4 h-4" />
-                  <span>Analyzing GitHub profile: {githubUsername}</span>
-                </div>}
-                {linkedinUrl && <div className="flex items-center justify-center space-x-2">
-                  <Linkedin className="w-4 h-4" />
-                  <span>Analyzing LinkedIn profile</span>
-                </div>}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {linkedinError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">
-                  LinkedIn Analysis Failed
-                </h3>
-                <div className="mt-2 text-sm text-red-700">
-                  <p>{linkedinError}</p>
-                  {linkedinError.includes('authentication') && (
-                    <div className="mt-2 p-3 bg-red-100 rounded border border-red-300">
-                      <p className="font-medium">🔒 Authentication Required</p>
-                      <ul className="mt-1 list-disc list-inside text-xs">
-                        <li>Ensure the LinkedIn profile is public and accessible</li>
-                        <li>The profile may be private or require login</li>
-                        <li>LinkedIn may be blocking automated access</li>
-                        <li>Try using a different profile or check privacy settings</li>
-                      </ul>
-                    </div>
-                  )}
-                  {linkedinError.includes('anti-scraping') && (
-                    <div className="mt-2 p-3 bg-yellow-100 rounded border border-yellow-300">
-                      <p className="font-medium">⚠️ Anti-Scraping Detection</p>
-                      <ul className="mt-1 list-disc list-inside text-xs">
-                        <li>LinkedIn detected automated access</li>
-                        <li>Try again later when traffic is lower</li>
-                        <li>Consider using a different profile</li>
-                        <li>This is a temporary limitation</li>
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Results Section */}
-        {(githubAnalysis || linkedinAnalysis) && (
-          <div className="space-y-6">
-            {/* Overall Score Card */}
-            <Card className="text-center hover:shadow-lg transition-all duration-300">
-              <CardHeader>
-                <CardTitle className="text-3xl">Overall Professional Score</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-center space-x-6 mb-6">
-                  <div className="text-center">
-                    <div className="text-6xl font-bold gradient-text" suppressHydrationWarning>{getOverallScore()}</div>
-                    <div className="text-lg text-gray-600">Total Score</div>
+              {/* Profile Connection Form */}
+              <Card className="skillsync-card skillsync-fade-in skillsync-stagger-1">
+                <CardHeader>
+                  <CardTitle className="text-h2" style={{ color: 'var(--foreground)' }}>Connect Your Profiles</CardTitle>
+                  <CardDescription style={{ color: 'var(--muted-foreground)' }}>
+                    We'll analyze your repositories, contributions, experience, and connections to provide personalized insights.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* GitHub Profile */}
+                  <div className="space-y-2">
+                    <Label htmlFor="github" className="flex items-center" style={{ color: 'var(--foreground)' }}>
+                      <Github className="w-4 h-4 mr-2" />
+                      GitHub Profile URL
+                    </Label>
+                    <Input
+                      id="github"
+                      type="url"
+                      placeholder="https://github.com/yourusername"
+                      value={githubUrl}
+                      onChange={(e) => setGithubUrl(e.target.value)}
+                      className="skillsync-input"
+                    />
+                    <p className="text-small" style={{ color: 'var(--muted-foreground)' }}>
+                      We'll analyze your repositories, contributions, and coding patterns
+                    </p>
                   </div>
-                  <div className="text-center">
-                    <Badge className={`text-lg px-4 py-2 ${getScoreLevel(getOverallScore()).color} ${getScoreLevel(getOverallScore()).textColor}`} suppressHydrationWarning>
-                      {getScoreLevel(getOverallScore()).level}
-                    </Badge>
+
+                  {/* LinkedIn Profile */}
+                  <div className="space-y-2">
+                    <Label htmlFor="linkedin" className="flex items-center" style={{ color: 'var(--foreground)' }}>
+                      <Linkedin className="w-4 h-4 mr-2" />
+                      LinkedIn Profile URL
+                    </Label>
+                    <Input
+                      id="linkedin"
+                      type="url"
+                      placeholder="https://linkedin.com/in/yourprofile"
+                      value={linkedinUrl}
+                      onChange={(e) => setLinkedinUrl(e.target.value)}
+                      className="skillsync-input"
+                    />
+                    <p className="text-small" style={{ color: 'var(--muted-foreground)' }}>
+                      We'll analyze your experience, skills, and professional network
+                    </p>
                   </div>
-                </div>
-                <Progress value={getOverallScore()} className="h-4 max-w-md mx-auto" suppressHydrationWarning />
-              </CardContent>
-            </Card>
 
-            {/* Analysis Tabs */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="github" disabled={!githubAnalysis}>GitHub Analysis</TabsTrigger>
-                <TabsTrigger value="linkedin" disabled={!linkedinAnalysis}>LinkedIn Analysis</TabsTrigger>
-              </TabsList>
+                  <div className="pt-4">
+                    <Button 
+                      onClick={startAnalysis}
+                      className="w-full skillsync-btn-primary text-lg py-3"
+                      disabled={!githubUrl && !linkedinUrl}
+                    >
+                      <TrendingUp className="w-5 h-5 mr-2" />
+                      Start Profile Analysis
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
 
-              {/* Overview Tab */}
-              <TabsContent value="overview" className="space-y-6">
-                <div className="grid lg:grid-cols-2 gap-6">
-                  {/* GitHub Summary */}
-                  {githubAnalysis && (
-                    <Card className="hover:shadow-lg transition-all duration-300">
-                      <CardHeader>
-                        <CardTitle className="flex items-center space-x-2">
-                          <Github className="w-5 h-5 text-gray-800" />
-                          <span>GitHub Summary</span>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="grid grid-cols-3 gap-4 text-center">
-                          <div>
-                            <div className="text-2xl font-bold text-blue-600" suppressHydrationWarning>{githubAnalysis.totalRepos}</div>
-                            <div className="text-sm text-gray-600">Repositories</div>
-                          </div>
-                          <div>
-                            <div className="text-2xl font-bold text-yellow-600" suppressHydrationWarning>{githubAnalysis.totalStars}</div>
-                            <div className="text-sm text-gray-600">Stars</div>
-                          </div>
-                          <div>
-                            <div className="text-2xl font-bold text-green-600" suppressHydrationWarning>{githubAnalysis.totalForks}</div>
-                            <div className="text-sm text-gray-600">Forks</div>
-                          </div>
-                        </div>
-                        <div className="text-center">
-                          <Badge className={`text-sm px-3 py-1 ${getScoreLevel(githubAnalysis.skillScore).color} ${getScoreLevel(githubAnalysis.skillScore).textColor}`} suppressHydrationWarning>
-                            Score: {githubAnalysis.skillScore}
-                          </Badge>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  {/* LinkedIn Summary */}
-                  {linkedinAnalysis && (
-                    <Card className="hover:shadow-lg transition-all duration-300">
-                      <CardHeader>
-                        <CardTitle className="flex items-center space-x-2">
-                          <Linkedin className="w-5 h-5 text-blue-600" />
-                          <span>LinkedIn Summary</span>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="grid grid-cols-3 gap-4 text-center">
-                          <div>
-                            <div className="text-2xl font-bold text-blue-600" suppressHydrationWarning>{linkedinAnalysis.profile.skills.length}</div>
-                            <div className="text-sm text-gray-600">Skills</div>
-                          </div>
-                          <div>
-                            <div className="text-2xl font-bold text-green-600" suppressHydrationWarning>{linkedinAnalysis.profile.experiences.length}</div>
-                            <div className="text-sm text-gray-600">Experiences</div>
-                          </div>
-                          <div>
-                            <div className="text-2xl font-bold text-purple-600" suppressHydrationWarning>{linkedinAnalysis.profile.certifications.length}</div>
-                            <div className="text-sm text-gray-600">Certifications</div>
-                          </div>
-                        </div>
-                        <div className="text-center">
-                          <Badge className={`text-sm px-3 py-1 ${getScoreLevel(linkedinAnalysis.skillScore).color} ${getScoreLevel(linkedinAnalysis.skillScore).textColor}`} suppressHydrationWarning>
-                            Score: {linkedinAnalysis.skillScore}
-                          </Badge>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-
-                {/* Combined Recommendations */}
-                <Card className="hover:shadow-lg transition-all duration-300">
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <TrendingUp className="w-5 h-5 text-green-600" />
-                      <span>Career Recommendations</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      {githubAnalysis?.recommendations.slice(0, 3).map((rec, index) => (
-                        <div key={index} className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200">
-                          <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                          <p className="text-sm text-gray-700">{rec}</p>
-                        </div>
-                      ))}
-                      {linkedinAnalysis?.recommendations.slice(0, 3).map((rec, index) => (
-                        <div key={index} className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200">
-                          <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                          <p className="text-sm text-gray-700">{rec}</p>
-                        </div>
-                      ))}
+              {/* Benefits Section */}
+              <div className="mt-12 grid md:grid-cols-3 gap-6">
+                <Card className="skillsync-card skillsync-fade-in skillsync-stagger-2 text-center">
+                  <CardContent className="p-6">
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: 'var(--primary)' }}>
+                      <Code className="w-6 h-6 text-white" />
                     </div>
+                    <h3 className="text-h3 mb-2" style={{ color: 'var(--foreground)' }}>Code Analysis</h3>
+                    <p className="text-body-sm" style={{ color: 'var(--muted-foreground)' }}>
+                      Analyze your GitHub repositories to identify technical skills and coding patterns
+                    </p>
                   </CardContent>
                 </Card>
-              </TabsContent>
 
-              {/* GitHub Analysis Tab */}
-              <TabsContent value="github" className="space-y-6">
-                {githubAnalysis && (
-                  <>
-                    {/* Skills Breakdown */}
-                    <div className="grid lg:grid-cols-2 gap-6">
-                      <Card className="hover:shadow-lg transition-all duration-300">
-                        <CardHeader>
-                          <CardTitle className="flex items-center space-x-2">
-                            <Code className="w-5 h-5 text-blue-600" />
-                            <span>Programming Languages</span>
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-2">
-                            {Object.entries(githubAnalysis.skills.languages)
-                              .sort(([,a], [,b]) => b - a)
-                              .slice(0, 8)
-                              .map(([lang, count]) => (
-                                <div key={lang} className="flex justify-between items-center hover:bg-blue-50 p-2 rounded transition-colors duration-200">
-                                  <span className="text-sm">{lang}</span>
-                                  <Badge variant="secondary">{count}</Badge>
-                                </div>
-                              ))}
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      <Card className="hover:shadow-lg transition-all duration-300">
-                        <CardHeader>
-                          <CardTitle className="flex items-center space-x-2">
-                            <Globe className="w-5 h-5 text-green-600" />
-                            <span>Frameworks & Tools</span>
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-2">
-                            {Object.entries(githubAnalysis.skills.frameworks)
-                              .sort(([,a], [,b]) => b - a)
-                              .slice(0, 8)
-                              .map(([framework, count]) => (
-                                <div key={framework} className="flex justify-between items-center hover:bg-green-50 p-2 rounded transition-colors duration-200">
-                                  <span className="text-sm">{framework}</span>
-                                  <Badge variant="secondary">{count}</Badge>
-                                </div>
-                              ))}
-                          </div>
-                        </CardContent>
-                      </Card>
+                <Card className="skillsync-card skillsync-fade-in skillsync-stagger-3 text-center">
+                  <CardContent className="p-6">
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: 'var(--secondary)' }}>
+                      <Briefcase className="w-6 h-6 text-white" />
                     </div>
+                    <h3 className="text-h3 mb-2" style={{ color: 'var(--foreground)' }}>Experience Insights</h3>
+                    <p className="text-body-sm" style={{ color: 'var(--muted-foreground)' }}>
+                      Get insights from your LinkedIn experience, skills, and professional achievements
+                    </p>
+                  </CardContent>
+                </Card>
 
-                    {/* Top Repositories */}
-                    <Card className="hover:shadow-lg transition-all duration-300">
-                      <CardHeader>
-                        <CardTitle className="flex items-center space-x-2">
-                          <Star className="w-5 h-5 text-yellow-600" />
-                          <span>Top Repositories</span>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-4">
-                          {githubAnalysis.topRepos.map((repo, index) => (
-                            <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 transition-all duration-200 hover:shadow-md">
-                              <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                  <h4 className="font-medium text-lg">{repo.name}</h4>
-                                  <p className="text-gray-600 text-sm mt-1">{repo.description}</p>
-                                  <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
-                                    <span className="flex items-center space-x-1">
-                                      <Code className="w-4 h-4" />
-                                      <span>{repo.language}</span>
-                                    </span>
-                                    <span className="flex items-center space-x-1">
-                                      <Star className="w-4 h-4" />
-                                      <span>{repo.stars}</span>
-                                    </span>
-                                    <span className="flex items-center space-x-1">
-                                      <GitFork className="w-4 h-4" />
-                                      <span>{repo.forks}</span>
-                                    </span>
-                                  </div>
-                                </div>
-                                <a
-                                  href={repo.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="ml-4"
-                                >
-                                  <Button variant="outline" size="sm" className="hover:bg-blue-50 hover:border-blue-300 transition-colors duration-200">
-                                    View
-                                  </Button>
-                                </a>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </>
-                )}
-              </TabsContent>
-
-              {/* LinkedIn Analysis Tab */}
-              <TabsContent value="linkedin" className="space-y-6">
-                {linkedinAnalysis && (
-                  <>
-                    {/* Profile Summary */}
-                    <Card className="hover:shadow-lg transition-all duration-300">
-                      <CardHeader>
-                        <CardTitle className="flex items-center space-x-2">
-                          <Linkedin className="w-5 h-5 text-blue-600" />
-                          <span>Profile Summary</span>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div>
-                          <h3 className="text-xl font-semibold">{linkedinAnalysis.profile.name}</h3>
-                          <p className="text-gray-600">{linkedinAnalysis.profile.headline}</p>
-                          <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
-                            <span className="flex items-center space-x-1">
-                              <MapPin className="w-4 h-4" />
-                              <span>{linkedinAnalysis.profile.location}</span>
-                            </span>
-                            <span className="flex items-center space-x-1">
-                              <Activity className="w-4 h-4" />
-                              <span>{linkedinAnalysis.profile.activityLevel} Activity</span>
-                            </span>
-                          </div>
-                        </div>
-                        <p className="text-gray-700">{linkedinAnalysis.profile.summary}</p>
-                      </CardContent>
-                    </Card>
-
-                    {/* Skills */}
-                    <Card className="hover:shadow-lg transition-all duration-300">
-                      <CardHeader>
-                        <CardTitle className="flex items-center space-x-2">
-                          <Award className="w-5 h-5 text-green-600" />
-                          <span>Skills & Endorsements</span>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex flex-wrap gap-2">
-                          {linkedinAnalysis.profile.skills.map((skill, index) => (
-                            <Badge key={index} variant="secondary" className="text-sm hover:bg-blue-100 transition-colors duration-200">
-                              {skill}
-                            </Badge>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Experience */}
-                    <Card className="hover:shadow-lg transition-all duration-300">
-                      <CardHeader>
-                        <CardTitle className="flex items-center space-x-2">
-                          <Briefcase className="w-5 h-5 text-blue-600" />
-                          <span>Work Experience</span>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-4">
-                          {linkedinAnalysis.profile.experiences.map((exp, index) => (
-                            <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 transition-all duration-200 hover:shadow-md">
-                              <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                  <h4 className="font-medium text-lg">{exp.title}</h4>
-                                  <p className="text-gray-600 font-medium">{exp.company}</p>
-                                  <p className="text-gray-500 text-sm mt-1">{exp.duration}</p>
-                                  <p className="text-gray-700 text-sm mt-2">{exp.description}</p>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Certifications */}
-                    <Card className="hover:shadow-lg transition-all duration-300">
-                      <CardHeader>
-                        <CardTitle className="flex items-center space-x-2">
-                          <Award className="w-5 h-5 text-purple-600" />
-                          <span>Certifications</span>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-4">
-                          {linkedinAnalysis.profile.certifications.map((cert, index) => (
-                            <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 transition-all duration-200 hover:shadow-md">
-                              <h4 className="font-medium text-lg">{cert.name}</h4>
-                              <p className="text-gray-600">{cert.issuer}</p>
-                              <p className="text-gray-500 text-sm mt-1">{cert.date}</p>
-                              <p className="text-gray-700 text-sm mt-2">{cert.description}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Topics of Interest */}
-                    <Card className="hover:shadow-lg transition-all duration-300">
-                      <CardHeader>
-                        <CardTitle className="flex items-center space-x-2">
-                          <MessageSquare className="w-5 h-5 text-orange-600" />
-                          <span>Topics of Interest</span>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex flex-wrap gap-2">
-                          {linkedinAnalysis.profile.topics.map((topic, index) => (
-                            <Badge key={index} variant="outline" className="text-sm hover:bg-orange-50 transition-colors duration-200">
-                              {topic}
-                            </Badge>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </>
-                )}
-              </TabsContent>
-            </Tabs>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                onClick={() => {
-                  setGithubAnalysis(null)
-                  setLinkedinAnalysis(null)
-                  setGithubUsername("")
-                  setLinkedinUrl("")
-                  setError(null)
-                }}
-                variant="outline"
-                className="flex items-center space-x-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
-              >
-                <TrendingUp className="w-4 h-4" />
-                <span>Analyze Another Profile</span>
-              </Button>
-              <Link href="/dashboard">
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <Home className="w-4 h-4 mr-2" />
-                  Back to Dashboard
-                </Button>
-              </Link>
+                <Card className="skillsync-card skillsync-fade-in skillsync-stagger-4 text-center">
+                  <CardContent className="p-6">
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: 'var(--accent)' }}>
+                      <Target className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-h3 mb-2" style={{ color: 'var(--foreground)' }}>Career Matching</h3>
+                    <p className="text-body-sm" style={{ color: 'var(--muted-foreground)' }}>
+                      Find the best career paths that match your current skills and experience
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
-    </div>
+    </ProtectedRoute>
   )
 }

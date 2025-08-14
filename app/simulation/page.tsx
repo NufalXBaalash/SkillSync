@@ -4,630 +4,603 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
+import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  ArrowLeft,
-  Play,
-  CheckCircle,
-  Clock,
-  BarChart3,
-  Code,
-  TrendingUp,
-  Users,
-  Lightbulb,
-  Target,
-  Award,
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { 
+  Play, 
+  Target, 
+  TrendingUp, 
+  Award, 
+  Clock, 
+  BookOpen, 
+  CheckCircle, 
+  BarChart3, 
+  Users, 
+  Settings, 
+  LogOut, 
+  Bell, 
+  Star, 
+  ArrowRight, 
+  Github, 
+  Zap, 
+  ClipboardCheck, 
+  Map, 
+  Monitor, 
+  Rocket, 
+  Lightbulb, 
+  Calendar,
+  ChevronRight,
+  Check,
+  X,
   AlertCircle,
-  Monitor,
-  Map,
+  Info,
+  Timer,
+  ExternalLink,
+  Code,
+  Briefcase,
+  Globe,
+  Database,
+  Cloud,
+  Shield,
+  Palette,
+  Lock,
+  Unlock,
+  Clock as ClockIcon,
+  BookOpen as BookOpenIcon,
+  Play as PlayIcon,
+  Target as TargetIcon,
+  Brain,
+  MessageSquare,
+  Video,
+  FileText,
+  CheckSquare,
+  Square
 } from "lucide-react"
 import Link from "next/link"
-import AIChatWidget from "@/components/ai-chat-widget"
-import SharedNavigation from "@/components/shared-navigation"
-
-interface SimulationTask {
-  id: string
-  title: string
-  role: string
-  difficulty: "Beginner" | "Intermediate" | "Advanced"
-  duration: string
-  description: string
-  scenario: string
-  deliverables: string[]
-  resources?: Array<{
-    title: string
-    content: string
-    type: "data" | "document" | "image"
-  }>
-}
-
-interface SimulationResult {
-  score: number
-  feedback: string
-  strengths: string[]
-  improvements: string[]
-  nextSteps: string[]
-}
+import ProtectedRoute from "@/components/protected-route"
+import SidebarNavigation from "@/components/sidebar-navigation"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function SimulationPage() {
-  const [selectedTask, setSelectedTask] = useState<SimulationTask | null>(null)
-  const [currentStep, setCurrentStep] = useState<"selection" | "task" | "results">("selection")
-  const [submissions, setSubmissions] = useState<Record<string, string>>({})
-  const [results, setResults] = useState<SimulationResult | null>(null)
+  const { user } = useAuth()
+  const [activeTab, setActiveTab] = useState("available")
+  const [selectedSimulation, setSelectedSimulation] = useState<any>(null)
+  const [isSimulationActive, setIsSimulationActive] = useState(false)
+  const [currentQuestion, setCurrentQuestion] = useState(0)
+  const [answers, setAnswers] = useState<{[key: string]: string}>({})
+  const [simulationComplete, setSimulationComplete] = useState(false)
 
-  const simulationTasks: SimulationTask[] = [
+  const availableSimulations = [
     {
-      id: "data-analyst-1",
-      title: "Sales Performance Analysis",
-      role: "Data Analyst",
+      id: 1,
+      title: "Frontend Developer Interview",
+      description: "Practice common frontend interview questions and scenarios",
       difficulty: "Intermediate",
-      duration: "45 minutes",
-      description: "Analyze quarterly sales data and identify key trends and opportunities",
-      scenario:
-        "You're a data analyst at TechCorp, a growing SaaS company. The sales team has provided you with Q3 sales data and wants insights to improve Q4 performance. Your manager needs a clear analysis with actionable recommendations.",
-      deliverables: [
-        "3 key insights from the sales data",
-        "2 recommendations for improving Q4 performance",
-        "1 data visualization concept (describe what chart you'd create)",
-      ],
-      resources: [
-        {
-          title: "Q3 Sales Data Summary",
-          type: "data",
-          content: `Monthly Sales Data:
-July: $125,000 (150 deals, avg deal size: $833)
-August: $98,000 (140 deals, avg deal size: $700)
-September: $156,000 (180 deals, avg deal size: $867)
-
-Product Breakdown (Q3 Total):
-- Basic Plan: $189,000 (60% of revenue, 420 customers)
-- Pro Plan: $152,000 (35% of revenue, 38 customers)
-- Enterprise: $38,000 (5% of revenue, 2 customers)
-
-Sales Team Performance:
-- Team A (East Coast): $190,000
-- Team B (West Coast): $189,000
-- Team C (International): $0 (new team, started in September)`,
-        },
-      ],
+      duration: "45-60 minutes",
+      questions: 15,
+      skills: ["React", "JavaScript", "CSS", "Problem Solving"],
+      category: "Technical",
+      rating: 4.8,
+      attempts: 1250,
+      thumbnail: "/placeholder.svg?height=120&width=200"
     },
     {
-      id: "frontend-dev-1",
-      title: "Component Architecture Challenge",
-      role: "Frontend Developer",
-      difficulty: "Intermediate",
-      duration: "60 minutes",
-      description: "Design and plan a reusable component system for an e-commerce platform",
-      scenario:
-        "You're joining the frontend team at ShopFast, an e-commerce startup. They need to rebuild their product catalog with reusable components. The current system is inconsistent and hard to maintain.",
-      deliverables: [
-        "Component hierarchy and structure plan",
-        "Props interface design for main components",
-        "State management approach explanation",
-      ],
-      resources: [
-        {
-          title: "Current UI Requirements",
-          type: "document",
-          content: `Required Components:
-- ProductCard: Shows image, title, price, rating, add to cart
-- ProductGrid: Displays multiple ProductCards with filtering
-- ProductDetail: Full product view with gallery, description, reviews
-- CartItem: Product in shopping cart with quantity controls
-
-Current Issues:
-- Inconsistent styling across product displays
-- Duplicate code for price formatting
-- No shared state for cart management
-- Mobile responsiveness problems`,
-        },
-      ],
-    },
-    {
-      id: "product-manager-1",
-      title: "Feature Prioritization Matrix",
-      role: "Product Manager",
+      id: 2,
+      title: "System Design Challenge",
+      description: "Design scalable systems and architecture solutions",
       difficulty: "Advanced",
-      duration: "50 minutes",
-      description: "Prioritize feature requests and create a product roadmap for a mobile app",
-      scenario:
-        "You're the PM for FitTracker, a fitness app with 50K users. You have limited engineering resources and multiple stakeholder requests. The CEO wants a clear roadmap for the next quarter.",
-      deliverables: [
-        "Prioritized feature list with reasoning",
-        "Resource allocation recommendation",
-        "Risk assessment for top 3 features",
-      ],
-      resources: [
-        {
-          title: "Feature Requests & Data",
-          type: "document",
-          content: `Pending Features:
-1. Social sharing (Marketing wants this, 2 weeks dev time)
-2. Apple Watch integration (500+ user requests, 6 weeks dev time)
-3. Nutrition tracking (CEO priority, 4 weeks dev time)
-4. Premium subscription tier (Revenue team priority, 3 weeks dev time)
-5. Dark mode (300+ user requests, 1 week dev time)
-6. Workout video library (Competitor analysis shows need, 8 weeks dev time)
-
-Current Metrics:
-- Daily Active Users: 12K
-- Monthly churn rate: 15%
-- Average session time: 8 minutes
-- Top user complaint: "Need better workout guidance"
-- Revenue: $25K/month from ads
-
-Team: 2 frontend devs, 1 backend dev, 1 designer`,
-        },
-      ],
+      duration: "90-120 minutes",
+      questions: 8,
+      skills: ["System Design", "Architecture", "Scalability", "Databases"],
+      category: "Technical",
+      rating: 4.9,
+      attempts: 890,
+      thumbnail: "/placeholder.svg?height=120&width=200"
     },
     {
-      id: "ux-designer-1",
-      title: "User Flow Optimization",
-      role: "UX Designer",
-      difficulty: "Intermediate",
-      duration: "55 minutes",
-      description: "Redesign the onboarding flow for a productivity app to improve user retention",
-      scenario:
-        "WorkFlow, a task management app, has a 40% drop-off rate during onboarding. Users find the setup process confusing and abandon before completing their profile. You need to redesign the flow.",
-      deliverables: [
-        "Improved onboarding flow outline",
-        "Key friction points identified",
-        "Success metrics to track improvement",
-      ],
-      resources: [
-        {
-          title: "Current Onboarding Issues",
-          type: "document",
-          content: `Current Flow (5 steps):
-1. Email signup
-2. Choose workspace name
-3. Invite team members (optional)
-4. Select project templates (12 options)
-5. Create first project
-
-User Feedback:
-- "Too many choices upfront"
-- "Don't know what templates to pick"
-- "Unclear what happens after setup"
-- "Takes too long to see value"
-
-Analytics:
-- Step 1 completion: 100%
-- Step 2 completion: 85%
-- Step 3 completion: 70%
-- Step 4 completion: 45%
-- Step 5 completion: 35%
-
-Successful users typically create their first task within 10 minutes of signup.`,
-        },
-      ],
+      id: 3,
+      title: "Behavioral Interview Practice",
+      description: "Master common behavioral and situational questions",
+      difficulty: "Beginner",
+      duration: "30-45 minutes",
+      questions: 12,
+      skills: ["Communication", "Leadership", "Problem Solving", "Teamwork"],
+      category: "Soft Skills",
+      rating: 4.7,
+      attempts: 2100,
+      thumbnail: "/placeholder.svg?height=120&width=200"
     },
+    {
+      id: 4,
+      title: "Data Structures & Algorithms",
+      description: "Practice coding challenges and algorithmic thinking",
+      difficulty: "Advanced",
+      duration: "60-90 minutes",
+      questions: 10,
+      skills: ["Algorithms", "Data Structures", "Problem Solving", "Optimization"],
+      category: "Technical",
+      rating: 4.6,
+      attempts: 1560,
+      thumbnail: "/placeholder.svg?height=120&width=200"
+    }
   ]
 
-  const handleTaskStart = (task: SimulationTask) => {
-    setSelectedTask(task)
-    setCurrentStep("task")
-    setSubmissions({})
-    setResults(null)
-  }
-
-  const handleSubmission = async () => {
-    if (!selectedTask) return
-
-    // Simulate evaluation time
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-
-    // Mock evaluation results
-    const mockResults: SimulationResult = {
-      score: Math.floor(Math.random() * 30) + 70, // 70-100 range
-      feedback:
-        selectedTask.role === "Data Analyst"
-          ? "Strong analytical thinking demonstrated. Your insights about the seasonal trends and team performance were particularly valuable. Consider diving deeper into customer segmentation for even more actionable recommendations."
-          : selectedTask.role === "Frontend Developer"
-            ? "Excellent component architecture planning. Your approach to state management shows good understanding of React patterns. The props interface design is clean and extensible."
-            : selectedTask.role === "Product Manager"
-              ? "Great prioritization framework applied. You balanced user needs with business objectives effectively. Your risk assessment shows strategic thinking."
-              : "Solid UX thinking with user-centered approach. Your identification of friction points was thorough. Consider adding more specific usability testing recommendations.",
-      strengths:
-        selectedTask.role === "Data Analyst"
-          ? ["Data interpretation", "Trend identification", "Business context awareness"]
-          : selectedTask.role === "Frontend Developer"
-            ? ["Component design", "State management", "Scalability planning"]
-            : selectedTask.role === "Product Manager"
-              ? ["Strategic thinking", "Stakeholder balance", "Resource planning"]
-              : ["User empathy", "Problem identification", "Flow optimization"],
-      improvements:
-        selectedTask.role === "Data Analyst"
-          ? ["Statistical significance testing", "Deeper customer segmentation"]
-          : selectedTask.role === "Frontend Developer"
-            ? ["Performance optimization considerations", "Accessibility planning"]
-            : selectedTask.role === "Product Manager"
-              ? ["Competitive analysis depth", "Success metrics definition"]
-              : ["Quantitative validation methods", "A/B testing strategy"],
-      nextSteps: [
-        "Practice similar scenarios to build confidence",
-        "Study industry best practices in this area",
-        "Consider taking a specialized course to fill knowledge gaps",
-      ],
+  const completedSimulations = [
+    {
+      id: 1,
+      title: "Frontend Developer Interview",
+      completedDate: "2024-04-10",
+      score: 87,
+      timeSpent: "52 minutes",
+      feedback: "Strong React knowledge, could improve on CSS optimization",
+      skills: ["React", "JavaScript", "CSS", "Problem Solving"]
+    },
+    {
+      id: 3,
+      title: "Behavioral Interview Practice",
+      completedDate: "2024-03-28",
+      score: 92,
+      timeSpent: "38 minutes",
+      feedback: "Excellent communication skills and examples provided",
+      skills: ["Communication", "Leadership", "Problem Solving", "Teamwork"]
     }
+  ]
 
-    setResults(mockResults)
-    setCurrentStep("results")
+  const startSimulation = (simulation: any) => {
+    setSelectedSimulation(simulation)
+    setIsSimulationActive(true)
+    setCurrentQuestion(0)
+    setAnswers({})
+    setSimulationComplete(false)
   }
 
-  const updateSubmission = (key: string, value: string) => {
-    setSubmissions((prev) => ({ ...prev, [key]: value }))
+  const handleAnswer = (questionId: string, answer: string) => {
+    setAnswers(prev => ({ ...prev, [questionId]: answer }))
   }
 
-  if (currentStep === "results" && results && selectedTask) {
+  const completeSimulation = () => {
+    setIsSimulationActive(false)
+    setSimulationComplete(true)
+  }
+
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty.toLowerCase()) {
+      case "beginner":
+        return "var(--success)"
+      case "intermediate":
+        return "var(--accent)"
+      case "advanced":
+        return "var(--primary)"
+      default:
+        return "var(--muted-foreground)"
+    }
+  }
+
+  if (isSimulationActive && selectedSimulation) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50">
-        <SharedNavigation />
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
-          <div className="mb-8">
-            <Button variant="ghost" onClick={() => setCurrentStep("selection")} className="mb-4 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Simulations
-            </Button>
-            <div className="text-center">
-              <div className="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Award className="w-8 h-8 text-white" />
-              </div>
-              <h1 className="text-3xl font-serif font-bold mb-2">Simulation Complete!</h1>
-              <p className="text-gray-600">
-                {selectedTask.title} - {selectedTask.role}
-              </p>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="md:col-span-2 space-y-6">
-              {/* Score */}
-              <Card className="hover:shadow-lg transition-all duration-300">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Target className="w-5 h-5 text-blue-600" />
-                    <span>Your Performance</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center mb-6">
-                    <div className="text-4xl font-bold gradient-text mb-2">{results.score}/100</div>
-                    <Badge
-                      variant={results.score >= 80 ? "default" : results.score >= 60 ? "secondary" : "destructive"}
-                    >
-                      {results.score >= 80 ? "Excellent" : results.score >= 60 ? "Good" : "Needs Improvement"}
-                    </Badge>
-                  </div>
-                  <p className="text-gray-600 leading-relaxed">{results.feedback}</p>
-                </CardContent>
-              </Card>
-
-              {/* Strengths & Improvements */}
-              <div className="grid md:grid-cols-2 gap-6">
-                <Card className="hover:shadow-lg transition-all duration-300">
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2 text-green-600">
-                      <CheckCircle className="w-5 h-5" />
-                      <span>Strengths</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {results.strengths.map((strength, index) => (
-                        <li key={index} className="flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                          <span className="text-sm">{strength}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-all duration-300">
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2 text-orange-600">
-                      <AlertCircle className="w-5 h-5" />
-                      <span>Areas to Improve</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {results.improvements.map((improvement, index) => (
-                        <li key={index} className="flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                          <span className="text-sm">{improvement}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-
-            {/* Next Steps Sidebar */}
-            <div className="space-y-6">
-              <Card className="hover:shadow-lg transition-all duration-300">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Lightbulb className="w-5 h-5 text-yellow-600" />
-                    <span>Next Steps</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {results.nextSteps.map((step, index) => (
-                    <div key={index} className="flex items-start space-x-2">
-                      <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <span className="text-xs font-medium text-blue-600">{index + 1}</span>
-                      </div>
-                      <p className="text-sm text-gray-600">{step}</p>
+      <ProtectedRoute>
+        <div className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+          <SidebarNavigation />
+          
+          {/* Main Content */}
+          <div className="lg:ml-64 lg:pt-16">
+            <div className="p-6 lg:p-8">
+              <div className="max-w-4xl mx-auto">
+                {/* Simulation Header */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h1 className="text-h2" style={{ color: 'var(--foreground)' }}>
+                        {selectedSimulation.title}
+                      </h1>
+                      <p className="text-body" style={{ color: 'var(--muted-foreground)' }}>
+                        Question {currentQuestion + 1} of {selectedSimulation.questions}
+                      </p>
                     </div>
-                  ))}
-                </CardContent>
-              </Card>
+                    <div className="flex items-center space-x-4">
+                      <Badge style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-foreground)' }}>
+                        <Clock className="w-4 h-4 mr-1" />
+                        {selectedSimulation.duration}
+                      </Badge>
+                      <Button 
+                        variant="outline" 
+                        onClick={completeSimulation}
+                        className="skillsync-btn-secondary"
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Exit Simulation
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {/* Progress Bar */}
+                  <Progress value={((currentQuestion + 1) / selectedSimulation.questions) * 100} className="h-2" />
+                </div>
 
-              <div className="space-y-3">
-                <Button className="w-full gradient-bg hover:shadow-lg transition-all duration-300">
-                  <Play className="w-4 h-4 mr-2" />
-                  Try Another Simulation
-                </Button>
-                <Link href="/roadmap">
-                  <Button variant="outline" className="w-full bg-transparent hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
-                    <Map className="w-4 h-4 mr-2" />
-                    View Learning Roadmap
-                  </Button>
-                </Link>
+                {/* Question Content */}
+                <Card className="skillsync-card skillsync-fade-in">
+                  <CardContent className="p-8">
+                    <div className="text-center mb-8">
+                      <h2 className="text-h3 mb-4" style={{ color: 'var(--foreground)' }}>
+                        Sample Question {currentQuestion + 1}
+                      </h2>
+                      <p className="text-body" style={{ color: 'var(--muted-foreground)' }}>
+                        This is a demonstration question. In a real simulation, you would see actual interview questions.
+                      </p>
+                    </div>
+
+                    {/* Sample Question */}
+                    <div className="space-y-6">
+                      <div className="p-6 rounded-lg" style={{ backgroundColor: 'var(--muted)' }}>
+                        <h3 className="text-h3 mb-3" style={{ color: 'var(--foreground)' }}>
+                          Explain the difference between React's useState and useEffect hooks.
+                        </h3>
+                        <p className="text-body" style={{ color: 'var(--muted-foreground)' }}>
+                          Provide a clear explanation with examples of when you would use each hook.
+                        </p>
+                      </div>
+
+                      {/* Answer Options */}
+                      <div className="space-y-3">
+                        <h4 className="text-h3" style={{ color: 'var(--foreground)' }}>Your Answer:</h4>
+                        <textarea
+                          className="w-full p-4 rounded-lg border min-h-[120px] skillsync-input"
+                          placeholder="Type your answer here..."
+                          value={answers[`question_${currentQuestion}`] || ""}
+                          onChange={(e) => handleAnswer(`question_${currentQuestion}`, e.target.value)}
+                        />
+                      </div>
+
+                      {/* Navigation */}
+                      <div className="flex justify-between pt-6">
+                        <Button
+                          variant="outline"
+                          onClick={() => setCurrentQuestion(Math.max(0, currentQuestion - 1))}
+                          disabled={currentQuestion === 0}
+                          className="skillsync-btn-secondary"
+                        >
+                          <ChevronRight className="w-4 h-4 mr-2 rotate-180" />
+                          Previous
+                        </Button>
+                        
+                        {currentQuestion < selectedSimulation.questions - 1 ? (
+                          <Button
+                            onClick={() => setCurrentQuestion(currentQuestion + 1)}
+                            className="skillsync-btn-primary"
+                          >
+                            Next
+                            <ChevronRight className="w-4 h-4 ml-2" />
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={completeSimulation}
+                            className="skillsync-btn-primary"
+                          >
+                            <Check className="w-4 h-4 mr-2" />
+                            Complete Simulation
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>
         </div>
-        <AIChatWidget />
-      </div>
+      </ProtectedRoute>
     )
   }
 
-  if (currentStep === "task" && selectedTask) {
+  if (simulationComplete) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50">
-        <SharedNavigation />
-        <div className="container mx-auto px-4 py-8 max-w-6xl">
-          <div className="mb-8">
-            <Button variant="ghost" onClick={() => setCurrentStep("selection")} className="mb-4 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Simulations
-            </Button>
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-serif font-bold mb-2">{selectedTask.title}</h1>
-                <div className="flex items-center space-x-4 text-sm text-gray-500">
-                  <Badge variant="outline">{selectedTask.role}</Badge>
-                  <div className="flex items-center space-x-1">
-                    <Clock className="w-4 h-4" />
-                    <span>{selectedTask.duration}</span>
+      <ProtectedRoute>
+        <div className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+          <SidebarNavigation />
+          
+          {/* Main Content */}
+          <div className="lg:ml-64 lg:pt-16">
+            <div className="p-6 lg:p-8">
+              <div className="max-w-4xl mx-auto">
+                {/* Success Header */}
+                <div className="text-center mb-8 skillsync-fade-in">
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: 'var(--success)' }}>
+                    <Check className="w-10 h-10 text-white" />
                   </div>
-                  <Badge variant="secondary">{selectedTask.difficulty}</Badge>
+                  <h1 className="text-h1 mb-4" style={{ color: 'var(--foreground)' }}>Simulation Complete!</h1>
+                  <p className="text-body max-w-2xl mx-auto" style={{ color: 'var(--muted-foreground)' }}>
+                    Great job completing the {selectedSimulation?.title}! Review your performance and continue practicing.
+                  </p>
+                </div>
+
+                {/* Results Summary */}
+                <div className="grid lg:grid-cols-2 gap-8 mb-8">
+                  <Card className="skillsync-card skillsync-fade-in skillsync-stagger-1">
+                    <CardHeader>
+                      <CardTitle className="text-h3" style={{ color: 'var(--foreground)' }}>Performance Summary</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="text-center p-3 rounded-lg" style={{ backgroundColor: 'var(--muted)' }}>
+                          <div className="text-2xl font-bold" style={{ color: 'var(--primary)' }}>15</div>
+                          <div className="text-body-sm" style={{ color: 'var(--muted-foreground)' }}>Questions</div>
+                        </div>
+                        <div className="text-center p-3 rounded-lg" style={{ backgroundColor: 'var(--muted)' }}>
+                          <div className="text-2xl font-bold" style={{ color: 'var(--success)' }}>52 min</div>
+                          <div className="text-body-sm" style={{ color: 'var(--muted-foreground)' }}>Time Spent</div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="skillsync-card skillsync-fade-in skillsync-stagger-2">
+                    <CardHeader>
+                      <CardTitle className="text-h3" style={{ color: 'var(--foreground)' }}>Next Steps</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--muted)' }}>
+                          <h4 className="font-medium text-body-sm mb-1" style={{ color: 'var(--foreground)' }}>Review Answers</h4>
+                          <p className="text-small" style={{ color: 'var(--muted-foreground)' }}>Go through your responses and identify areas for improvement</p>
+                        </div>
+                        <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--muted)' }}>
+                          <h4 className="font-medium text-body-sm mb-1" style={{ color: 'var(--foreground)' }}>Practice More</h4>
+                          <p className="text-small" style={{ color: 'var(--muted-foreground)' }}>Try other simulations to strengthen different skills</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="text-center space-y-4">
+                  <div className="flex justify-center space-x-4">
+                    <Button 
+                      onClick={() => {
+                        setSimulationComplete(false)
+                        setIsSimulationActive(false)
+                        setSelectedSimulation(null)
+                      }}
+                      className="skillsync-btn-primary"
+                    >
+                      <Play className="w-4 h-4 mr-2" />
+                      Try Another Simulation
+                    </Button>
+                    <Link href="/dashboard">
+                      <Button variant="outline" className="skillsync-btn-secondary">
+                        Back to Dashboard
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
-              {/* Scenario */}
-              <Card className="hover:shadow-lg transition-all duration-300">
-                <CardHeader>
-                  <CardTitle>Scenario</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-700 leading-relaxed">{selectedTask.scenario}</p>
-                </CardContent>
-              </Card>
-
-              {/* Resources */}
-              {selectedTask.resources && (
-                <Card className="hover:shadow-lg transition-all duration-300">
-                  <CardHeader>
-                    <CardTitle>Resources</CardTitle>
-                    <CardDescription>Use this information to complete your task</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Tabs defaultValue="0">
-                      <TabsList>
-                        {selectedTask.resources.map((resource, index) => (
-                          <TabsTrigger key={index} value={index.toString()}>
-                            {resource.title}
-                          </TabsTrigger>
-                        ))}
-                      </TabsList>
-                      {selectedTask.resources.map((resource, index) => (
-                        <TabsContent key={index} value={index.toString()}>
-                          <div className="bg-gray-50 p-4 rounded-lg">
-                            <pre className="text-sm whitespace-pre-wrap font-mono">{resource.content}</pre>
-                          </div>
-                        </TabsContent>
-                      ))}
-                    </Tabs>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Deliverables */}
-              <Card className="hover:shadow-lg transition-all duration-300">
-                <CardHeader>
-                  <CardTitle>Your Deliverables</CardTitle>
-                  <CardDescription>Complete each section below</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {selectedTask.deliverables.map((deliverable, index) => (
-                    <div key={index} className="space-y-2">
-                      <Label className="text-base font-medium">
-                        {index + 1}. {deliverable}
-                      </Label>
-                      <Textarea
-                        placeholder={`Enter your response for: ${deliverable}`}
-                        value={submissions[`deliverable-${index}`] || ""}
-                        onChange={(e) => updateSubmission(`deliverable-${index}`, e.target.value)}
-                        className="min-h-[120px] hover:border-blue-300 focus:border-blue-500 transition-colors duration-200"
-                      />
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Sidebar */}
-            <div className="space-y-6">
-              <Card className="sticky top-8 hover:shadow-lg transition-all duration-300">
-                <CardHeader>
-                  <CardTitle className="text-lg">Task Overview</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <h4 className="font-medium mb-2">What you'll deliver:</h4>
-                    <ul className="space-y-1 text-sm text-gray-600">
-                      {selectedTask.deliverables.map((deliverable, index) => (
-                        <li key={index} className="flex items-start space-x-2">
-                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                          <span>{deliverable}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="pt-4 border-t">
-                    <Button
-                      onClick={handleSubmission}
-                      disabled={selectedTask.deliverables.some(
-                        (_, index) => !submissions[`deliverable-${index}`]?.trim(),
-                      )}
-                      className="w-full gradient-bg hover:shadow-lg transition-all duration-300"
-                    >
-                      Submit for Evaluation
-                    </Button>
-                    <p className="text-xs text-gray-500 text-center mt-2">Complete all sections to submit</p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-all duration-300">
-                <CardHeader>
-                  <CardTitle className="text-lg">Tips for Success</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 text-sm text-gray-600">
-                  <div className="flex items-start space-x-2">
-                    <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>Be specific and actionable in your recommendations</span>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>Use data from the resources to support your points</span>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>Think from the business perspective</span>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>Consider implementation feasibility</span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
         </div>
-        <AIChatWidget />
-      </div>
+      </ProtectedRoute>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-violet-50">
-      <SharedNavigation />
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="mb-8">
-          <Link href="/roadmap" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-4 transition-colors duration-200">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Roadmap
-          </Link>
-          <div className="text-center">
-            <h1 className="text-4xl font-serif font-bold mb-4">Job Simulations</h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Practice real-world scenarios and get instant feedback to build confidence before applying to actual
-              positions
-            </p>
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6">
-          {simulationTasks.map((task) => (
-            <Card key={task.id} className="card-hover border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
-              <CardHeader>
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center space-x-2">
-                    {task.role === "Data Analyst" && <BarChart3 className="w-5 h-5 text-blue-600" />}
-                    {task.role === "Frontend Developer" && <Code className="w-5 h-5 text-violet-600" />}
-                    {task.role === "Product Manager" && <TrendingUp className="w-5 h-5 text-green-600" />}
-                    {task.role === "UX Designer" && <Users className="w-5 h-5 text-pink-600" />}
-                    <Badge variant="outline" className="text-xs">
-                      {task.role}
+    <ProtectedRoute>
+      <div className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+        <SidebarNavigation />
+        
+        {/* Main Content */}
+        <div className="lg:ml-64 lg:pt-16">
+          <div className="p-6 lg:p-8">
+            <div className="max-w-6xl mx-auto">
+              {/* Header */}
+              <div className="mb-8 skillsync-fade-in">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h1 className="text-h1 mb-2" style={{ color: 'var(--foreground)' }}>Job Simulations</h1>
+                    <p className="text-body" style={{ color: 'var(--muted-foreground)' }}>
+                      Practice real-world scenarios and interview questions to prepare for your next career move.
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <Badge className="px-3 py-1" style={{ backgroundColor: 'var(--success)', color: 'var(--success-foreground)' }}>
+                      <CheckCircle className="w-4 h-4 mr-1" />
+                      {completedSimulations.length} Completed
                     </Badge>
                   </div>
-                  <Badge
-                    variant={
-                      task.difficulty === "Beginner"
-                        ? "secondary"
-                        : task.difficulty === "Intermediate"
-                          ? "default"
-                          : "destructive"
-                    }
-                    className="text-xs"
-                  >
-                    {task.difficulty}
-                  </Badge>
                 </div>
-                <CardTitle className="text-xl">{task.title}</CardTitle>
-                <CardDescription className="text-sm leading-relaxed">{task.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between text-sm text-gray-500">
-                    <div className="flex items-center space-x-1">
-                      <Clock className="w-4 h-4" />
-                      <span>{task.duration}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Target className="w-4 h-4" />
-                      <span>{task.deliverables.length} deliverables</span>
-                    </div>
+              </div>
+
+              {/* Main Content Tabs */}
+              <div className="grid lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2">
+                  <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 mb-6" style={{ backgroundColor: 'var(--muted)' }}>
+                      <TabsTrigger value="available" className="skillsync-nav-link">Available Simulations</TabsTrigger>
+                      <TabsTrigger value="completed" className="skillsync-nav-link">Completed</TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="available" className="space-y-6">
+                      <div className="grid md:grid-cols-2 gap-6">
+                        {availableSimulations.map((simulation, index) => (
+                          <Card key={simulation.id} className="skillsync-card skillsync-fade-in skillsync-stagger-{index + 1} hover:shadow-lg transition-all duration-300">
+                            <CardHeader>
+                              <div className="flex items-center justify-between mb-3">
+                                <Badge 
+                                  style={{ 
+                                    backgroundColor: getDifficultyColor(simulation.difficulty), 
+                                    color: 'var(--white)' 
+                                  }}
+                                >
+                                  {simulation.difficulty}
+                                </Badge>
+                                <div className="flex items-center space-x-1">
+                                  <Star className="w-4 h-4" style={{ color: 'var(--accent)' }} />
+                                  <span className="text-body-sm" style={{ color: 'var(--foreground)' }}>
+                                    {simulation.rating}
+                                  </span>
+                                </div>
+                              </div>
+                              <CardTitle className="text-h3" style={{ color: 'var(--foreground)' }}>
+                                {simulation.title}
+                              </CardTitle>
+                              <CardDescription style={{ color: 'var(--muted-foreground)' }}>
+                                {simulation.description}
+                              </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                              <div className="flex items-center justify-between text-body-sm" style={{ color: 'var(--muted-foreground)' }}>
+                                <span>Duration: {simulation.duration}</span>
+                                <span>{simulation.questions} questions</span>
+                              </div>
+                              
+                              <div className="flex flex-wrap gap-2">
+                                {simulation.skills.map((skill, skillIndex) => (
+                                  <Badge key={skillIndex} variant="outline" className="text-xs" 
+                                         style={{ borderColor: 'var(--border)', color: 'var(--muted-foreground)' }}>
+                                    {skill}
+                                  </Badge>
+                                ))}
+                              </div>
+                              
+                              <div className="flex items-center justify-between">
+                                <span className="text-small" style={{ color: 'var(--muted-foreground)' }}>
+                                  {simulation.attempts} attempts
+                                </span>
+                                <Button 
+                                  onClick={() => startSimulation(simulation)}
+                                  className="skillsync-btn-primary"
+                                >
+                                  <Play className="w-4 h-4 mr-2" />
+                                  Start Simulation
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="completed" className="space-y-6">
+                      <Card className="skillsync-card skillsync-fade-in">
+                        <CardHeader>
+                          <CardTitle className="text-h3" style={{ color: 'var(--foreground)' }}>Your Completed Simulations</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            {completedSimulations.map((simulation, index) => (
+                              <div key={simulation.id} className="flex items-center justify-between p-4 rounded-lg hover:bg-gray-50 transition-colors duration-200" style={{ backgroundColor: 'var(--muted)' }}>
+                                <div className="flex-1">
+                                  <h4 className="font-medium text-body-sm mb-1" style={{ color: 'var(--foreground)' }}>
+                                    {simulation.title}
+                                  </h4>
+                                  <div className="flex items-center space-x-4 text-small" style={{ color: 'var(--muted-foreground)' }}>
+                                    <span>Completed: {new Date(simulation.completedDate).toLocaleDateString()}</span>
+                                    <span>Score: {simulation.score}%</span>
+                                    <span>Time: {simulation.timeSpent}</span>
+                                  </div>
+                                  <p className="text-small mt-2" style={{ color: 'var(--muted-foreground)' }}>
+                                    {simulation.feedback}
+                                  </p>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    className="skillsync-btn-secondary"
+                                  >
+                                    <BarChart3 className="w-4 h-4 mr-2" />
+                                    View Details
+                                  </Button>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    className="skillsync-btn-secondary"
+                                  >
+                                    <Play className="w-4 h-4 mr-2" />
+                                    Retake
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+                  </Tabs>
+                </div>
+
+                {/* Right Sidebar */}
+                <div className="space-y-6">
+                  {/* Quick Stats */}
+                  <Card className="skillsync-card skillsync-fade-in skillsync-stagger-4">
+                    <CardHeader>
+                      <CardTitle className="text-h3" style={{ color: 'var(--foreground)' }}>Your Stats</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-body-sm" style={{ color: 'var(--muted-foreground)' }}>Simulations completed</span>
+                        <span className="text-body-sm font-medium" style={{ color: 'var(--foreground)' }}>{completedSimulations.length}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-body-sm" style={{ color: 'var(--muted-foreground)' }}>Average score</span>
+                        <span className="text-body-sm font-medium" style={{ color: 'var(--foreground)' }}>
+                          {completedSimulations.length > 0 
+                            ? Math.round(completedSimulations.reduce((acc, sim) => acc + sim.score, 0) / completedSimulations.length)
+                            : 0}%
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-body-sm" style={{ color: 'var(--muted-foreground)' }}>Total time</span>
+                        <span className="text-body-sm font-medium" style={{ color: 'var(--foreground)' }}>
+                          {completedSimulations.length > 0 
+                            ? completedSimulations.reduce((acc, sim) => acc + parseInt(sim.timeSpent), 0)
+                            : 0} min
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Tips */}
+                  <Card className="skillsync-card skillsync-fade-in skillsync-stagger-4">
+                    <CardHeader>
+                      <CardTitle className="text-h3" style={{ color: 'var(--foreground)' }}>Simulation Tips</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--muted)' }}>
+                        <h4 className="font-medium text-body-sm mb-1" style={{ color: 'var(--foreground)' }}>Take Your Time</h4>
+                        <p className="text-small" style={{ color: 'var(--muted-foreground)' }}>
+                          Read questions carefully and think through your answers
+                        </p>
+                      </div>
+                      <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--muted)' }}>
+                        <h4 className="font-medium text-body-sm mb-1" style={{ color: 'var(--foreground)' }}>Practice Regularly</h4>
+                        <p className="text-small" style={{ color: 'var(--muted-foreground)' }}>
+                          Consistent practice improves your confidence and skills
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Quick Actions */}
+                  <div className="space-y-3">
+                    <Link href="/assessment">
+                      <Button className="w-full skillsync-btn-primary">
+                        <ClipboardCheck className="w-4 h-4 mr-2" />
+                        Take Assessment
+                      </Button>
+                    </Link>
+                    <Link href="/roadmap">
+                      <Button variant="outline" className="w-full skillsync-btn-secondary">
+                        <Map className="w-4 h-4 mr-2" />
+                        View Roadmap
+                      </Button>
+                    </Link>
                   </div>
-
-                  <Button onClick={() => handleTaskStart(task)} className="w-full gradient-bg hover:shadow-lg transition-all duration-300">
-                    <Play className="w-4 h-4 mr-2" />
-                    Start Simulation
-                  </Button>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Coming Soon */}
-        <Card className="mt-8 border-dashed border-2 border-gray-300 hover:shadow-lg transition-all duration-300">
-          <CardContent className="text-center py-12">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Clock className="w-8 h-8 text-gray-400" />
+              </div>
             </div>
-            <h3 className="text-xl font-serif font-bold mb-2">More Simulations Coming Soon</h3>
-            <p className="text-gray-600 mb-4">
-              We're adding new job simulations for Marketing, Sales, DevOps, and more career paths.
-            </p>
-            <Badge variant="secondary">Coming in Q1 2025</Badge>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
-      <AIChatWidget />
-    </div>
+    </ProtectedRoute>
   )
 }
